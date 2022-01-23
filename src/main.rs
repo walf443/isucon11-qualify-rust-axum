@@ -2,6 +2,7 @@ use std::net::SocketAddr;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{Json, Router};
+use axum::extract::Path;
 use axum::routing::{get,post};
 
 #[tokio::main]
@@ -15,11 +16,11 @@ async fn main() {
         .route("/api/user/me", get(get_me))
         .route("/api/isu", get(get_isu_list))
         .route("/api/isu", post(post_isu))
-        .route("/api/isu/{jia_isu_uuid}", get(get_isu_id))
-        .route("/api/isu/{jia_isu_uuid}/icon", get(get_isu_icon))
-        .route("/api/isu/{jia_isu_uuid}/graph", get(get_isu_graph))
-        .route("/api/isu/condition/{jia_isu_uuid}", get(get_isu_conditions))
-        .route("/api/isu/condition/{jia_isu_uuid}", post(post_isu_condition))
+        .route("/api/isu/:jia_isu_uuid", get(get_isu_id))
+        .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon))
+        .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
+        .route("/api/isu/condition/:jia_isu_uuid", get(get_isu_conditions))
+        .route("/api/isu/condition/:jia_isu_uuid", post(post_isu_condition))
         .route("/api/trend", get(get_trend))
         .route("/api/auth", post(post_authentication));
 
@@ -29,10 +30,6 @@ async fn main() {
 }
 
 async fn post_initialize() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn post_authentication() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
@@ -51,23 +48,23 @@ async fn post_isu() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
-async fn get_isu_id() -> impl IntoResponse {
+async fn get_isu_id(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
-async fn get_isu_icon() -> impl IntoResponse {
+async fn get_isu_icon(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
-async fn get_isu_graph() -> impl IntoResponse {
+async fn get_isu_graph(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
-async fn get_isu_conditions() -> impl IntoResponse {
+async fn get_isu_conditions(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
-async fn post_isu_condition() -> impl IntoResponse {
+async fn post_isu_condition(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
@@ -79,3 +76,6 @@ async fn get_index() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
 
+async fn post_authentication() -> impl IntoResponse {
+    (StatusCode::OK, Json(vec!("Hello, world")))
+}
