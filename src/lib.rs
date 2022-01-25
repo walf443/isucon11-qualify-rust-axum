@@ -1,11 +1,11 @@
 use std::future::Future;
 use std::net::TcpListener;
 use axum::{Json, Router, Server};
-use axum::extract::Path;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
+use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
 mod api;
 
@@ -41,14 +41,6 @@ async fn post_signout() -> impl IntoResponse {
 async fn get_me() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
-async fn get_isu_conditions(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn post_isu_condition(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
 async fn get_trend() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
