@@ -1,6 +1,6 @@
 use std::future::Future;
 use std::net::TcpListener;
-use axum::{Json, Router, Server};
+use axum::{Router, Server};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
@@ -16,13 +16,11 @@ pub fn run(listener: TcpListener) -> Result<impl Future<Output = hyper::Result<(
         .route("/initialize", post(post_initialize))
         .route("/api/signout", post(post_signout))
         .route("/api/user/me", get(get_me))
-        .route("/api/isu", get(get_isu_list))
-        .route("/api/isu", post(post_isu))
+        .route("/api/isu", get(get_isu_list).post(post_isu))
         .route("/api/isu/:jia_isu_uuid", get(get_isu_id))
         .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon))
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
-        .route("/api/isu/condition/:jia_isu_uuid", get(get_isu_conditions))
-        .route("/api/isu/condition/:jia_isu_uuid", post(post_isu_condition))
+        .route("/api/isu/condition/:jia_isu_uuid", get(get_isu_conditions).post(post_isu_condition))
         .route("/api/trend", get(get_trend))
         .route("/api/auth", post(post_authentication));
 

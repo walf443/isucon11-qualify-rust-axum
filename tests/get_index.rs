@@ -1,7 +1,5 @@
 mod helper;
 
-use tracing_subscriber::fmt::format;
-
 #[tokio::test]
 async fn test_get_index() {
     let app = helper::spawn_app().await;
