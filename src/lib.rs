@@ -4,6 +4,7 @@ use axum::{Json, Router, Server};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
+use crate::api::{get_index, get_me, get_trend, post_authentication, post_initialize, post_signout};
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
@@ -30,25 +31,3 @@ pub fn run(listener: TcpListener) -> Result<impl Future<Output = hyper::Result<(
     Ok(server)
 }
 
-async fn post_initialize() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn post_signout() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn get_me() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-async fn get_trend() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn get_index() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
-
-async fn post_authentication() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
-}
