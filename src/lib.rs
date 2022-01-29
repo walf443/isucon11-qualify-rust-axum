@@ -6,16 +6,18 @@ use axum::{AddExtensionLayer, Router, Server};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
-use sqlx::{Executor, MySql, Pool};
+use sqlx::{Executor, MySql, MySqlPool, Pool};
+use sqlx::mysql::MySqlPoolOptions;
 use crate::api::{get_index, get_me, get_trend, post_authentication, post_initialize, post_signout};
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
 mod api;
 
-pub fn run(listener: TcpListener, dbpool: Pool<MySql>) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
+pub fn run(listener: TcpListener, dbpool: MySqlPool) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
+    let db_layer = AddExtensionLayer::new(dbpool);
+
     let app = Router::new()
-        .layer(AddExtensionLayer::new(dbpool))
         .route("/", get(get_index))
         .route("/initialize", post(post_initialize))
         .route("/api/signout", post(post_signout))
@@ -26,14 +28,15 @@ pub fn run(listener: TcpListener, dbpool: Pool<MySql>) -> Result<impl Future<Out
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
         .route("/api/isu/condition/:jia_isu_uuid", get(get_isu_conditions).post(post_isu_condition))
         .route("/api/trend", get(get_trend))
-        .route("/api/auth", post(post_authentication));
+        .route("/api/auth", post(post_authentication))
+        .layer(db_layer);
 
     let server = Server::from_tcp(listener)?.serve(app.into_make_service());
 
     Ok(server)
 }
 
-pub async fn get_db_connection(config: &DBConfig) -> Pool<MySql> {
+pub async fn get_db_connection(config: &DBConfig) -> MySqlPool {
     let pool = sqlx::mysql::MySqlPoolOptions::new().connect_timeout(config.connect_timeout).after_connect(|conn| {
         Box::pin(async move {
             conn.execute("set time_zone = '+09:00'").await?;
