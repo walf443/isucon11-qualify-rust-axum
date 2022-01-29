@@ -1,6 +1,7 @@
 use std::env;
 use std::future::Future;
 use std::net::TcpListener;
+use std::time::Duration;
 use axum::{AddExtensionLayer, Router, Server};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -33,7 +34,7 @@ pub fn run(listener: TcpListener, dbpool: Pool<MySql>) -> Result<impl Future<Out
 }
 
 pub async fn get_db_connection(config: &DBConfig) -> Pool<MySql> {
-    let pool = sqlx::mysql::MySqlPoolOptions::new().after_connect(|conn| {
+    let pool = sqlx::mysql::MySqlPoolOptions::new().connect_timeout(config.connect_timeout).after_connect(|conn| {
         Box::pin(async move {
             conn.execute("set time_zone = '+09:00'").await?;
             Ok(())
@@ -55,12 +56,14 @@ pub struct DBConfig {
     db_name: String,
     user: String,
     password: String,
+    connect_timeout: Duration,
 }
 
 impl DBConfig {
     pub fn default_for_test() -> Self {
         let mut config = Self::default();
         config.db_name = env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned());
+        config.connect_timeout = Duration::from_secs(1);
         config
     }
 }
@@ -74,6 +77,7 @@ impl Default for DBConfig {
             user: env::var("MYSQL_USER").unwrap_or_else(|_| "isucon".to_owned()),
             db_name: env::var("MYSQL_DBNAME").unwrap_or_else(|_| "isucondition".to_owned()),
             password: env::var("MYSQL_PASS").unwrap_or_else(|_| "isucon".to_owned()),
+            connect_timeout: Duration::from_secs(30),
         }
     }
 }
