@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:8
+    container_name: isucon11-qualify-myql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: isucondition
+      MYSQL_USER: isucon
+      MYSQL_PASSWORD: isucon
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./sql/init.d:/docker-entrypoint-initdb.d
+      - ./docker/db/data:/var/lib/mysql
+    ports:
+      - 3306:3306
