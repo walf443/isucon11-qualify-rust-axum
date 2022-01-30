@@ -1,9 +1,9 @@
 use axum::http::StatusCode;
 use axum::{extract, Json};
 use axum::response::IntoResponse;
-use sqlx::{MySqlPool, Pool};
-use sqlx::mysql::MySql;
+use sqlx::{MySqlPool};
 use tracing::log;
+use crate::model::isu_association_config_repository::{IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl};
 
 pub mod isu;
 pub mod isu_condition;
@@ -21,9 +21,10 @@ pub async fn post_initialize(pool: extract::Extension<MySqlPool>) -> Result<impl
         return Err((StatusCode::INTERNAL_SERVER_ERROR, "exec init.sh".to_string()));
     }
 
-    sqlx::query!("INSERT INTO `isu_association_config` (`name`, `url`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `url` = VALUES(`url`)",
-        "jia_service_url", "http://localhost:3000")
-        .fetch_all(&pool.0).await.map_err(|e| {
+    let isu_association_config_repo = IsuAssociationConfigRepositoryImpl {
+        pool: pool.0,
+    };
+    isu_association_config_repo.insert("jia_service_url", "http://localhost:3000").await.map_err(|e| {
         log::error!("insert isu_association_config error");
         (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
     })?;

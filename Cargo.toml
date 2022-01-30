@@ -14,5 +14,6 @@ reqwest = "0.11.9"
 hyper = "0.14.16"
 anyhow = "1.0.53"
 sqlx = { version = "0.5.10", features = ["mysql", "runtime-tokio-native-tls"] }
+async-trait = "0.1.52"
 
 [features]

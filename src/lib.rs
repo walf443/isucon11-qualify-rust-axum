@@ -6,16 +6,17 @@ use axum::{AddExtensionLayer, Router, Server};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
-use sqlx::{Executor, MySql, MySqlPool, Pool};
-use sqlx::mysql::MySqlPoolOptions;
+use sqlx::{Executor, MySqlPool};
 use crate::api::{get_index, get_me, get_trend, post_authentication, post_initialize, post_signout};
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
+mod model;
 mod api;
 
 pub fn run(listener: TcpListener, dbpool: MySqlPool) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
     let db_layer = AddExtensionLayer::new(dbpool);
+
 
     let app = Router::new()
         .route("/", get(get_index))
