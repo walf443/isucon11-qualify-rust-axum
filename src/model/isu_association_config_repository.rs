@@ -1,9 +1,11 @@
+use anyhow::Error;
 use sqlx::MySqlPool;
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait IsuAssociationConfigRepository {
     async fn insert(&self, name: &str, url: &str) -> Result<(), anyhow::Error>;
+    async fn get_jia_service_url(&self) -> Result<String, anyhow::Error>;
 }
 
 pub struct IsuAssociationConfigRepositoryImpl {
@@ -17,6 +19,12 @@ impl IsuAssociationConfigRepository for IsuAssociationConfigRepositoryImpl {
         name, url)
             .fetch_all(&self.pool).await?;
         Ok(())
+    }
+
+    async fn get_jia_service_url(&self) -> Result<String, Error> {
+        let result = sqlx::query!("SELECT url FROM isu_association_config WHERE name = ?", "jia_service_url").fetch_one(&self.pool).await?;
+
+        Ok(result.url)
     }
 }
 
