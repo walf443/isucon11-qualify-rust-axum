@@ -17,5 +17,7 @@ sqlx = { version = "0.5.10", features = ["mysql", "runtime-tokio-native-tls"] }
 async-trait = "0.1.52"
 serde_json = "1.0.78"
 serde = { version = "1.0.136", features = ["derive"] }
+tower = "0.4.11"
+tower-cookies = "0.4.1"
 
 [features]

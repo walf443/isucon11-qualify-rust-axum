@@ -1,6 +1,7 @@
 use axum::http::StatusCode;
 use axum::{Json};
 use axum::response::IntoResponse;
+use tower_cookies::Cookies;
 
 #[cfg(test)]
 use crate::test_helper;
@@ -34,6 +35,6 @@ async fn test_get_index() {
     assert!(res.status().is_success());
 }
 
-pub async fn post_authentication() -> impl IntoResponse {
+pub async fn post_authentication(cookies: Cookies) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!("Hello, world")))
 }
