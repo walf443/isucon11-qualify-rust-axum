@@ -15,5 +15,7 @@ hyper = "0.14.16"
 anyhow = "1.0.53"
 sqlx = { version = "0.5.10", features = ["mysql", "runtime-tokio-native-tls"] }
 async-trait = "0.1.52"
+serde_json = "1.0.78"
+serde = { version = "1.0.136", features = ["derive"] }
 
 [features]

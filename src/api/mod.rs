@@ -3,10 +3,16 @@ use axum::{extract, Json};
 use axum::response::IntoResponse;
 use sqlx::{MySqlPool};
 use tracing::log;
+use serde::Serialize;
 use crate::model::isu_association_config_repository::{IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl};
 
 pub mod isu;
 pub mod isu_condition;
+
+#[derive(Serialize)]
+pub struct PostInitializeResponse {
+    pub language: String,
+}
 
 pub async fn post_initialize(pool: extract::Extension<MySqlPool>) -> Result<impl IntoResponse, (StatusCode, String)> {
     let status = tokio::process::Command::new("./sql/init.sh")
@@ -29,7 +35,9 @@ pub async fn post_initialize(pool: extract::Extension<MySqlPool>) -> Result<impl
         (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
     })?;
 
-    Ok((StatusCode::OK, Json("OK")))
+    Ok((StatusCode::OK, Json(PostInitializeResponse {
+        language: "rust".to_string(),
+    })))
 }
 
 pub async fn post_signout() -> impl IntoResponse {
