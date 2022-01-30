@@ -1,7 +1,7 @@
 use std::net::TcpListener;
 use reqwest::Url;
 use sqlx::{MySqlPool};
-use isucon11_qualify_rust_axum::{DBConfig, get_db_connection, run};
+use crate::{DBConfig, get_db_connection, run};
 
 pub struct TestApp {
     pub address: String,

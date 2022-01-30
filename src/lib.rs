@@ -11,6 +11,9 @@ use crate::api::{get_index, get_me, get_trend, post_authentication, post_initial
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
+#[cfg(test)]
+mod test_helper;
+
 mod model;
 mod api;
 
