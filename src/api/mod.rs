@@ -1,7 +1,11 @@
+use anyhow::Error;
 use axum::http::StatusCode;
-use axum::{Json};
+use axum::{extract, Json};
 use axum::response::IntoResponse;
-use tower_cookies::Cookies;
+use sqlx::MySqlPool;
+use tower_cookies::{Cookie, Cookies};
+use tracing::log;
+use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
 
 #[cfg(test)]
 use crate::test_helper;
@@ -35,6 +39,15 @@ async fn test_get_index() {
     assert!(res.status().is_success());
 }
 
-pub async fn post_authentication(cookies: Cookies) -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!("Hello, world")))
+pub async fn post_authentication(pool: extract::Extension<MySqlPool>, cookies: Cookies) -> Result<impl IntoResponse, (StatusCode, String)> {
+
+    let jia_user_id = "1";
+    let user_repo = UserRepositoryImpl { pool: pool.0 };
+    user_repo.insert(jia_user_id.to_string()).await.map_err(|e| {
+        log::error!("user insert failed: {:?}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, "user insert failed".to_string())
+    })?;
+    cookies.add(Cookie::new("jia_user_id", jia_user_id));
+
+    Ok((StatusCode::OK, Json(vec!("Hello, world"))))
 }

@@ -12,7 +12,7 @@ pub trait UserRepository {
 }
 
 pub struct UserRepositoryImpl {
-    pool: MySqlPool
+    pub pool: MySqlPool
 }
 
 #[async_trait]
