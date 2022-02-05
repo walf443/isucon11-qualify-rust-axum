@@ -1,5 +1,5 @@
+use isucon11_qualify_rust_axum::{get_db_connection, run, DBConfig};
 use std::net::TcpListener;
-use isucon11_qualify_rust_axum::{DBConfig, get_db_connection, run};
 
 #[tokio::main]
 async fn main() -> hyper::Result<()> {
@@ -14,4 +14,3 @@ async fn main() -> hyper::Result<()> {
 
     server.await
 }
-

@@ -1,26 +1,28 @@
+use crate::api::initialize::post_initialize;
+use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
+use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
+use crate::api::{get_index, get_me, get_trend, post_authentication, post_signout};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use axum::routing::{get, post};
+use axum::{AddExtensionLayer, Router, Server};
+use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::future::Future;
 use std::net::TcpListener;
 use std::time::Duration;
-use axum::{AddExtensionLayer, Router, Server};
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
-use axum::routing::{get, post};
-use sqlx::{Executor, MySqlPool};
-use crate::api::{get_index, get_me, get_trend, post_authentication, post_signout};
-use crate::api::initialize::post_initialize;
-use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
-use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 
 #[cfg(test)]
 mod test_helper;
 
-mod model;
 mod api;
+mod model;
 
-pub fn run(listener: TcpListener, dbpool: MySqlPool) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
+pub fn run(
+    listener: TcpListener,
+    dbpool: MySqlPool,
+) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
     let db_layer = AddExtensionLayer::new(dbpool);
-
 
     let app = Router::new()
         .route("/", get(get_index))
@@ -31,7 +33,10 @@ pub fn run(listener: TcpListener, dbpool: MySqlPool) -> Result<impl Future<Outpu
         .route("/api/isu/:jia_isu_uuid", get(get_isu_id))
         .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon))
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
-        .route("/api/isu/condition/:jia_isu_uuid", get(get_isu_conditions).post(post_isu_condition))
+        .route(
+            "/api/isu/condition/:jia_isu_uuid",
+            get(get_isu_conditions).post(post_isu_condition),
+        )
         .route("/api/trend", get(get_trend))
         .route("/api/auth", post(post_authentication))
         .layer(db_layer);
@@ -42,18 +47,24 @@ pub fn run(listener: TcpListener, dbpool: MySqlPool) -> Result<impl Future<Outpu
 }
 
 pub async fn get_db_connection(config: &DBConfig) -> MySqlPool {
-    let pool = sqlx::mysql::MySqlPoolOptions::new().connect_timeout(config.connect_timeout).after_connect(|conn| {
-        Box::pin(async move {
-            conn.execute("set time_zone = '+09:00'").await?;
-            Ok(())
+    let pool = sqlx::mysql::MySqlPoolOptions::new()
+        .connect_timeout(config.connect_timeout)
+        .after_connect(|conn| {
+            Box::pin(async move {
+                conn.execute("set time_zone = '+09:00'").await?;
+                Ok(())
+            })
         })
-    }).connect_with(sqlx::mysql::MySqlConnectOptions::new()
-        .host(&config.host)
-        .port(config.port)
-        .database(&config.db_name)
-        .username(&config.user)
-        .password(&config.password)
-    ).await.expect("can't connect db");
+        .connect_with(
+            sqlx::mysql::MySqlConnectOptions::new()
+                .host(&config.host)
+                .port(config.port)
+                .database(&config.db_name)
+                .username(&config.user)
+                .password(&config.password),
+        )
+        .await
+        .expect("can't connect db");
     pool
 }
 
@@ -70,7 +81,8 @@ pub struct DBConfig {
 impl DBConfig {
     pub fn default_for_test() -> Self {
         let mut config = Self::default();
-        config.db_name = env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned());
+        config.db_name =
+            env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned());
         config.connect_timeout = Duration::from_secs(1);
         config
     }
@@ -78,7 +90,10 @@ impl DBConfig {
 
 impl Default for DBConfig {
     fn default() -> Self {
-        let port= env::var("MYSQL_PORT").unwrap_or_else(|_| "3306".to_owned()).parse().expect("port should be u16");
+        let port = env::var("MYSQL_PORT")
+            .unwrap_or_else(|_| "3306".to_owned())
+            .parse()
+            .expect("port should be u16");
         Self {
             host: env::var("MYSQL_HOST").unwrap_or_else(|_| "127.0.0.1".to_owned()),
             port: port,

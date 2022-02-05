@@ -1,7 +1,7 @@
-use std::net::TcpListener;
+use crate::{get_db_connection, run, DBConfig};
 use reqwest::Url;
-use sqlx::{MySqlPool};
-use crate::{DBConfig, get_db_connection, run};
+use sqlx::MySqlPool;
+use std::net::TcpListener;
 
 pub struct TestApp {
     pub address: String,
@@ -18,5 +18,9 @@ pub async fn spawn_app() -> TestApp {
     let server = run(listener, pool.clone()).expect("Failed to bind to address");
     let _ = tokio::spawn(server);
     let address = format!("http://127.0.0.1:{port}");
-    TestApp { address: address.clone(), database: pool, url: Url::parse(&address).unwrap() }
+    TestApp {
+        address: address.clone(),
+        database: pool,
+        url: Url::parse(&address).unwrap(),
+    }
 }
