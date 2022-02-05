@@ -34,9 +34,9 @@ pub mod tests {
         }
 
         async fn truncate_table(&self, table: &str) -> Result<(), sqlx::Error> {
-            sqlx::query("truncate table user")
-                .execute(&self.pool)
-                .await?;
+            // check table name string
+            let sql = format!("TRUNCATE TABLE `{}`", table);
+            sqlx::query(&sql).execute(&self.pool).await?;
 
             Ok(())
         }
