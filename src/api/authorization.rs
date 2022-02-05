@@ -66,4 +66,21 @@ pub async fn post_signout(
 
 #[cfg(test)]
 mod tests {
+    use crate::{StatusCode, test_helper};
+
+    #[tokio::test]
+    async fn test_post_signout() -> Result<(), sqlx::Error> {
+        let app = test_helper::spawn_app().await;
+
+        let client = reqwest::Client::new();
+        let res = client
+            .post(app.url.join("/api/signout").unwrap())
+            .send()
+            .await
+            .expect("Failed to request");
+
+        assert_eq!(res.status(), StatusCode::OK);
+
+        Ok(())
+    }
 }

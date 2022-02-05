@@ -11,6 +11,8 @@ use std::env;
 use std::future::Future;
 use std::net::TcpListener;
 use std::time::Duration;
+use tower_cookies::CookieManagerLayer;
+use tracing_subscriber::fmt::layer;
 use crate::api::authorization::{post_authentication, post_signout};
 
 #[cfg(test)]
@@ -40,7 +42,8 @@ pub fn run(
         )
         .route("/api/trend", get(get_trend))
         .route("/api/auth", post(post_authentication))
-        .layer(db_layer);
+        .layer(db_layer)
+        .layer(CookieManagerLayer::new());
 
     let server = Server::from_tcp(listener)?.serve(app.into_make_service());
 
