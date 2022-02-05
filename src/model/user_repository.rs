@@ -66,7 +66,28 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_user_repository_count() -> Result<(), sqlx::Error> {
+    async fn test_user_repository_count_with_result() -> Result<(), sqlx::Error> {
+        let dbconfg = DBConfig::default_for_test();
+        let pool = get_db_connection(&dbconfg).await;
+        let mut cleaner = Cleaner::new(pool.clone());
+        cleaner.prepare_table("user").await?;
+
+        sqlx::query!("INSERT INTO user (jia_user_id) VALUES (1)")
+            .execute(&pool)
+            .await?;
+
+        let repo = UserRepositoryImpl { pool: pool.clone() };
+
+        let result = repo.count_by_user_id("1".to_string()).await?;
+        assert_eq!(result, 1);
+
+        cleaner.clean().await?;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_user_repository_count_without_result() -> Result<(), sqlx::Error> {
         let dbconfg = DBConfig::default_for_test();
         let pool = get_db_connection(&dbconfg).await;
         let mut cleaner = Cleaner::new(pool.clone());

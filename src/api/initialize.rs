@@ -58,6 +58,7 @@ pub async fn post_initialize(
 #[cfg(test)]
 mod tests {
     use crate::api::initialize::{PostInitializeRequest, PostInitializeResponse};
+    use crate::model::cleaner::tests::Cleaner;
     use crate::{test_helper, StatusCode};
 
     #[tokio::test]
@@ -67,6 +68,8 @@ mod tests {
             std::env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned()),
         );
         let app = test_helper::spawn_app().await;
+        let mut cleaner = Cleaner::new(app.database.clone());
+        cleaner.prepare_table("isu_association_config").await?;
         let client = reqwest::Client::new();
         let res = client
             .post(app.url.join("/initialize").unwrap())
@@ -89,6 +92,8 @@ mod tests {
             result.unwrap().count,
             "isu_association_config record created"
         );
+
+        cleaner.clean().await?;
 
         Ok(())
     }

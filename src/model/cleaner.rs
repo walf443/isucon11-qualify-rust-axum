@@ -1,6 +1,8 @@
 #[cfg(test)]
 pub mod tests {
     use sqlx::MySqlPool;
+    use tracing::error;
+
     pub struct Cleaner {
         pool: sqlx::MySqlPool,
         target_tables: Vec<String>,
@@ -55,7 +57,8 @@ pub mod tests {
     impl Drop for Cleaner {
         fn drop(&mut self) {
             if !self.destroyed {
-                panic!("you must call clean before drop!!");
+                // no panic for test assert error
+                error!("please call clean before drop");
             }
         }
     }
