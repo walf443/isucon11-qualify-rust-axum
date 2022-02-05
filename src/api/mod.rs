@@ -26,10 +26,6 @@ mod tests {
     #[tokio::test]
     async fn test_get_index() -> Result<(), sqlx::Error> {
         let app = test_helper::spawn_app().await;
-        let mut cleaner = Cleaner::new(app.database.clone());
-
-        cleaner.prepare_table("user").await?;
-
         let client = reqwest::Client::new();
         let res = client
             .get(app.url.join("/").unwrap())
@@ -38,7 +34,6 @@ mod tests {
             .expect("Failed to request");
 
         assert!(res.status().is_success());
-        cleaner.clean().await?;
 
         Ok(())
     }
