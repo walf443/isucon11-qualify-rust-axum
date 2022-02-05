@@ -1,14 +1,10 @@
 use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
-use anyhow::Error;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{extract, Json};
 use sqlx::MySqlPool;
 use tower_cookies::{Cookie, Cookies};
 use tracing::log;
-
-#[cfg(test)]
-use crate::test_helper;
 
 pub mod initialize;
 pub mod isu;
@@ -27,19 +23,6 @@ pub async fn get_trend() -> impl IntoResponse {
 
 pub async fn get_index() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
-}
-
-#[tokio::test]
-async fn test_get_index() {
-    let app = test_helper::spawn_app().await;
-    let client = reqwest::Client::new();
-    let res = client
-        .get(app.url.join("/").unwrap())
-        .send()
-        .await
-        .expect("Failed to request");
-
-    assert!(res.status().is_success());
 }
 
 pub async fn post_authentication(
@@ -61,4 +44,22 @@ pub async fn post_authentication(
     cookies.add(Cookie::new("jia_user_id", jia_user_id));
 
     Ok((StatusCode::OK, Json(vec!["Hello, world"])))
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::test_helper;
+
+    #[tokio::test]
+    async fn test_get_index() {
+        let app = test_helper::spawn_app().await;
+        let client = reqwest::Client::new();
+        let res = client
+            .get(app.url.join("/").unwrap())
+            .send()
+            .await
+            .expect("Failed to request");
+
+        assert!(res.status().is_success());
+    }
 }

@@ -1,4 +1,3 @@
-use anyhow::Error;
 use async_trait::async_trait;
 use sqlx::MySqlPool;
 
