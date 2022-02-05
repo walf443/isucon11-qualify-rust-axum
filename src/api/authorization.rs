@@ -56,6 +56,10 @@ pub async fn post_authentication(
     Ok((StatusCode::OK, Json(vec!["Hello, world"])))
 }
 
+pub async fn post_signout() -> impl IntoResponse {
+    (StatusCode::OK, Json(vec!["Hello, world"]))
+}
+
 #[cfg(test)]
 mod tests {
 }

@@ -1,7 +1,7 @@
 use crate::api::initialize::post_initialize;
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
-use crate::api::{get_index, get_me, get_trend, post_signout};
+use crate::api::{get_index, get_me, get_trend};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
@@ -11,7 +11,7 @@ use std::env;
 use std::future::Future;
 use std::net::TcpListener;
 use std::time::Duration;
-use crate::api::authorization::post_authentication;
+use crate::api::authorization::{post_authentication, post_signout};
 
 #[cfg(test)]
 mod test_helper;

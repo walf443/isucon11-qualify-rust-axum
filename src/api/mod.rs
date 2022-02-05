@@ -7,10 +7,6 @@ pub mod initialize;
 pub mod isu;
 pub mod isu_condition;
 
-pub async fn post_signout() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!["Hello, world"]))
-}
-
 pub async fn get_me() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
 }
