@@ -80,7 +80,6 @@ mod tests {
             .expect("Failed to request");
 
         assert_eq!(res.status(), StatusCode::OK);
-
         Ok(())
     }
 }

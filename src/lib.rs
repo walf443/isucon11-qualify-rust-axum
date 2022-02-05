@@ -12,7 +12,6 @@ use std::future::Future;
 use std::net::TcpListener;
 use std::time::Duration;
 use tower_cookies::CookieManagerLayer;
-use tracing_subscriber::fmt::layer;
 use crate::api::authorization::{post_authentication, post_signout};
 
 #[cfg(test)]
