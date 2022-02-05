@@ -56,8 +56,12 @@ pub async fn post_authentication(
     Ok((StatusCode::OK, Json(vec!["Hello, world"])))
 }
 
-pub async fn post_signout() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!["Hello, world"]))
+pub async fn post_signout(
+    cookies: Cookies,
+) -> impl IntoResponse {
+    cookies.remove(Cookie::new("jia_user_id", ""));
+
+    (StatusCode::OK, Json("OK"))
 }
 
 #[cfg(test)]
