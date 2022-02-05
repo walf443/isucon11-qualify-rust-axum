@@ -56,9 +56,7 @@ pub async fn post_authentication(
     Ok((StatusCode::OK, Json(vec!["Hello, world"])))
 }
 
-pub async fn post_signout(
-    cookies: Cookies,
-) -> impl IntoResponse {
+pub async fn post_signout(cookies: Cookies) -> impl IntoResponse {
     cookies.remove(Cookie::new("jia_user_id", ""));
 
     (StatusCode::OK, Json("OK"))
@@ -66,7 +64,7 @@ pub async fn post_signout(
 
 #[cfg(test)]
 mod tests {
-    use crate::{StatusCode, test_helper};
+    use crate::{test_helper, StatusCode};
 
     #[tokio::test]
     async fn test_post_signout() -> Result<(), sqlx::Error> {
