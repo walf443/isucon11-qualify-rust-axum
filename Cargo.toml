@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-axum = "0.4.4"
+axum = { version = "0.4.4", features = ["headers"] }
 tokio = { version = "1", features = ["full"] }
 tracing-subscriber = "0.3.6"
 tracing = "0.1.29"
@@ -19,5 +19,7 @@ serde_json = "1.0.78"
 serde = { version = "1.0.136", features = ["derive"] }
 tower = "0.4.11"
 tower-cookies = "0.4.1"
+jsonwebtoken = "8.0.1"
+lazy_static = "1.4.0"
 
 [features]
