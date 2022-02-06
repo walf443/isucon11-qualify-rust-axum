@@ -1,11 +1,12 @@
-use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
+use std::sync::Arc;
 use crate::model::{RepositoryManager, RepositoryManagerImpl};
 use crate::{IntoResponse, MySqlPool, StatusCode};
-use axum::extract::TypedHeader;
+use axum::extract::{Extension, TypedHeader};
 use axum::headers::authorization::Bearer;
 use axum::{extract, headers, Json};
 use tower_cookies::{Cookie, Cookies};
 use tracing::log;
+use crate::model::user_repository::UserRepository;
 
 const JIA_JWT_SIGNING_KEY_PATH: &str = "ec256-public.pem";
 
@@ -20,7 +21,7 @@ struct Claims {
 }
 
 pub async fn post_authentication(
-    pool: extract::Extension<MySqlPool>,
+    Extension(repo): Extension<Arc<RepositoryManagerImpl>>,
     TypedHeader(authorization): axum::extract::TypedHeader<headers::Authorization<Bearer>>,
     cookies: Cookies,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
@@ -41,9 +42,7 @@ pub async fn post_authentication(
     let claims: Claims = token.claims;
     let jia_user_id = claims.jia_user_id;
 
-    let repo = RepositoryManagerImpl::new(pool.0);
-    repo.user_repository()
-        .insert(jia_user_id.to_string())
+    repo.user_repository().insert(jia_user_id.to_string())
         .await
         .map_err(|e| {
             log::error!("user insert failed: {:?}", e);

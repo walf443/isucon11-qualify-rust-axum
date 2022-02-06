@@ -1,7 +1,9 @@
 use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
-use crate::{IntoResponse, MySqlPool, StatusCode};
+use crate::{IntoResponse, MySqlPool, RepositoryManager, RepositoryManagerImpl, StatusCode};
+use axum::extract::Extension;
 use axum::{extract, Json};
 use serde::Serialize;
+use std::sync::Arc;
 use tower_cookies::Cookies;
 use tracing::error;
 
@@ -11,7 +13,7 @@ struct GetMeResponse {
 }
 
 pub async fn get_me(
-    pool: extract::Extension<MySqlPool>,
+    Extension(repo): Extension<Arc<RepositoryManagerImpl>>,
     cookies: Cookies,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let cookie = cookies.get("jia_user_id");
@@ -24,8 +26,11 @@ pub async fn get_me(
     let cookie = cookie.unwrap();
     let jia_user_id = cookie.value();
 
-    let repo = UserRepositoryImpl { pool: pool.0 };
-    match repo.count_by_user_id(jia_user_id.to_string()).await {
+    match repo
+        .user_repository()
+        .count_by_user_id(jia_user_id.to_string())
+        .await
+    {
         Ok(_) => Ok((
             StatusCode::OK,
             Json(GetMeResponse {

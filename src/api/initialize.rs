@@ -1,11 +1,13 @@
 use crate::model::isu_association_config_repository::{
     IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl,
 };
-use crate::{IntoResponse, MySqlPool};
+use crate::{IntoResponse, MySqlPool, RepositoryManager, RepositoryManagerImpl};
+use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::{extract, Json};
 use serde::Deserialize;
 use serde::Serialize;
+use std::sync::Arc;
 use tracing::log;
 
 #[derive(Serialize, Deserialize)]
@@ -19,7 +21,7 @@ struct PostInitializeResponse {
 }
 
 pub async fn post_initialize(
-    pool: extract::Extension<MySqlPool>,
+    Extension(repo): Extension<Arc<RepositoryManagerImpl>>,
     Json(payload): Json<PostInitializeRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let status = tokio::process::Command::new("./sql/init.sh")
@@ -38,8 +40,7 @@ pub async fn post_initialize(
         ));
     }
 
-    let isu_association_config_repo = IsuAssociationConfigRepositoryImpl { pool: pool.0 };
-    isu_association_config_repo
+    repo.isu_accosiation_config_repository()
         .insert("jia_service_url", &payload.jia_service_url)
         .await
         .map_err(|e| {

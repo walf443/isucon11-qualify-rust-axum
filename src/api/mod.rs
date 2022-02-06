@@ -1,8 +1,6 @@
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use sqlx::MySqlPool;
-
 pub mod authorization;
 pub mod initialize;
 pub mod isu;

@@ -25,7 +25,8 @@ pub struct RepositoryManagerImpl {
 
 impl RepositoryManagerImpl {
     pub fn new(pool: MySqlPool) -> Self {
-        let isu_association_config_repository = IsuAssociationConfigRepositoryImpl { pool: pool.clone() };
+        let isu_association_config_repository =
+            IsuAssociationConfigRepositoryImpl { pool: pool.clone() };
         let user_repository = UserRepositoryImpl { pool: pool.clone() };
 
         Self {
