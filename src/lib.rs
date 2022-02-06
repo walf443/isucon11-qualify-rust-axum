@@ -4,6 +4,7 @@ use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, pos
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 use crate::api::user::get_me;
 use crate::api::{get_index, get_trend};
+use crate::model::{RepositoryManager, RepositoryManagerImpl};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
@@ -12,6 +13,7 @@ use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::future::Future;
 use std::net::TcpListener;
+use std::sync::Arc;
 use std::time::Duration;
 use tower_cookies::CookieManagerLayer;
 
@@ -19,13 +21,13 @@ use tower_cookies::CookieManagerLayer;
 mod test_helper;
 
 mod api;
-mod model;
+pub mod model;
 
-pub fn run(
+pub fn run<R: 'static + RepositoryManager>(
     listener: TcpListener,
-    dbpool: MySqlPool,
+    repo_manager: Arc<R>,
 ) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
-    let db_layer = AddExtensionLayer::new(dbpool);
+    let repo_manager_layer = AddExtensionLayer::new(repo_manager);
 
     let app = Router::new()
         .route("/", get(get_index))
@@ -42,7 +44,7 @@ pub fn run(
         )
         .route("/api/trend", get(get_trend))
         .route("/api/auth", post(post_authentication))
-        .layer(db_layer)
+        .layer(repo_manager_layer)
         .layer(CookieManagerLayer::new());
 
     let server = Server::from_tcp(listener)?.serve(app.into_make_service());

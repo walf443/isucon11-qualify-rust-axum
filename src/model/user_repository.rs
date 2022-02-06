@@ -7,18 +7,19 @@ pub trait UserRepository {
     async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64, sqlx::Error>;
 }
 
-pub struct UserRepositoryImpl<'a> {
-    pub pool: &'a MySqlPool,
+#[derive(Clone)]
+pub struct UserRepositoryImpl {
+    pub pool: MySqlPool,
 }
 
 #[async_trait]
-impl<'a> UserRepository for UserRepositoryImpl<'a> {
+impl UserRepository for UserRepositoryImpl {
     async fn insert(&self, jia_user_id: String) -> Result<(), sqlx::Error> {
         sqlx::query!(
             "INSERT IGNORE INTO user (`jia_user_id`) VALUES (?)",
             jia_user_id
         )
-        .fetch_all(self.pool)
+        .fetch_all(&self.pool)
         .await?;
 
         Ok(())
@@ -29,7 +30,7 @@ impl<'a> UserRepository for UserRepositoryImpl<'a> {
             "SElECT COUNT(*) as count FROM user WHERE jia_user_id = ?",
             jia_user_id
         )
-        .fetch_one(self.pool)
+        .fetch_one(&self.pool)
         .await?;
 
         Ok(result.count)
@@ -49,7 +50,7 @@ mod tests {
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
 
-        let repo = UserRepositoryImpl { pool: &pool };
+        let repo = UserRepositoryImpl { pool: pool.clone() };
         let result = repo.insert("1".to_string()).await?;
         let result = sqlx::query!(
             "SELECT COUNT(*) as count FROM user WHERE jia_user_id = ?",
@@ -76,7 +77,7 @@ mod tests {
             .execute(&pool)
             .await?;
 
-        let repo = UserRepositoryImpl { pool: &pool };
+        let repo = UserRepositoryImpl { pool: pool };
 
         let result = repo.count_by_user_id("1".to_string()).await?;
         assert_eq!(result, 1);
@@ -92,7 +93,7 @@ mod tests {
         let pool = get_db_connection(&dbconfg).await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
-        let repo = UserRepositoryImpl { pool: &pool };
+        let repo = UserRepositoryImpl { pool: pool };
 
         let result = repo.count_by_user_id("1".to_string()).await?;
         assert_eq!(0, result);

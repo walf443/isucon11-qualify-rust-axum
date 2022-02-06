@@ -38,7 +38,7 @@ pub async fn post_initialize(
         ));
     }
 
-    let isu_association_config_repo = IsuAssociationConfigRepositoryImpl { pool: &pool.0 };
+    let isu_association_config_repo = IsuAssociationConfigRepositoryImpl { pool: pool.0 };
     isu_association_config_repo
         .insert("jia_service_url", &payload.jia_service_url)
         .await

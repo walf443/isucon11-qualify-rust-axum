@@ -3,12 +3,13 @@ use crate::model::isu_association_config_repository::{
 };
 use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
 use sqlx::MySqlPool;
+use std::sync::Arc;
 
 pub mod cleaner;
 pub mod isu_association_config_repository;
 pub mod user_repository;
 
-pub trait RepositoryManager {
+pub trait RepositoryManager: Clone + std::marker::Send + std::marker::Sync {
     type IsuAssociationConfigRepo: IsuAssociationConfigRepository;
     type UserRepo: UserRepository;
 
@@ -16,16 +17,16 @@ pub trait RepositoryManager {
     fn user_repository(&self) -> &Self::UserRepo;
 }
 
-pub struct RepositoryManagerImpl<'a> {
-    isu_accosication_config_repository: IsuAssociationConfigRepositoryImpl<'a>,
-    user_repository: UserRepositoryImpl<'a>,
+#[derive(Clone)]
+pub struct RepositoryManagerImpl {
+    isu_accosication_config_repository: IsuAssociationConfigRepositoryImpl,
+    user_repository: UserRepositoryImpl,
 }
 
-impl<'a> RepositoryManagerImpl<'a> {
-    pub fn new(pool: &'a MySqlPool) -> Self {
-        let isu_association_config_repository =
-            IsuAssociationConfigRepositoryImpl { pool };
-        let user_repository = UserRepositoryImpl { pool };
+impl RepositoryManagerImpl {
+    pub fn new(pool: MySqlPool) -> Self {
+        let isu_association_config_repository = IsuAssociationConfigRepositoryImpl { pool: pool.clone() };
+        let user_repository = UserRepositoryImpl { pool: pool.clone() };
 
         Self {
             isu_accosication_config_repository: isu_association_config_repository,
@@ -34,9 +35,9 @@ impl<'a> RepositoryManagerImpl<'a> {
     }
 }
 
-impl<'a> RepositoryManager for RepositoryManagerImpl<'a> {
-    type IsuAssociationConfigRepo = IsuAssociationConfigRepositoryImpl<'a>;
-    type UserRepo = UserRepositoryImpl<'a>;
+impl RepositoryManager for RepositoryManagerImpl {
+    type IsuAssociationConfigRepo = IsuAssociationConfigRepositoryImpl;
+    type UserRepo = UserRepositoryImpl;
 
     fn isu_accosiation_config_repository(&self) -> &Self::IsuAssociationConfigRepo {
         &self.isu_accosication_config_repository

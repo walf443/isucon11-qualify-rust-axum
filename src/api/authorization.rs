@@ -1,4 +1,5 @@
 use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
+use crate::model::{RepositoryManager, RepositoryManagerImpl};
 use crate::{IntoResponse, MySqlPool, StatusCode};
 use axum::extract::TypedHeader;
 use axum::headers::authorization::Bearer;
@@ -40,8 +41,8 @@ pub async fn post_authentication(
     let claims: Claims = token.claims;
     let jia_user_id = claims.jia_user_id;
 
-    let user_repo = UserRepositoryImpl { pool: &pool.0 };
-    user_repo
+    let repo = RepositoryManagerImpl::new(pool.0);
+    repo.user_repository()
         .insert(jia_user_id.to_string())
         .await
         .map_err(|e| {

@@ -24,7 +24,7 @@ pub async fn get_me(
     let cookie = cookie.unwrap();
     let jia_user_id = cookie.value();
 
-    let repo = UserRepositoryImpl { pool: &pool.0 };
+    let repo = UserRepositoryImpl { pool: pool.0 };
     match repo.count_by_user_id(jia_user_id.to_string()).await {
         Ok(_) => Ok((
             StatusCode::OK,
