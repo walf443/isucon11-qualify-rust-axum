@@ -17,14 +17,14 @@ pub trait RepositoryManager {
 }
 
 pub struct RepositoryManagerImpl<'a> {
-    isu_accosication_config_repository: IsuAssociationConfigRepositoryImpl,
+    isu_accosication_config_repository: IsuAssociationConfigRepositoryImpl<'a>,
     user_repository: UserRepositoryImpl<'a>,
 }
 
 impl<'a> RepositoryManagerImpl<'a> {
     pub fn new(pool: &'a MySqlPool) -> Self {
         let isu_association_config_repository =
-            IsuAssociationConfigRepositoryImpl { pool: pool.clone() };
+            IsuAssociationConfigRepositoryImpl { pool };
         let user_repository = UserRepositoryImpl { pool };
 
         Self {
@@ -35,7 +35,7 @@ impl<'a> RepositoryManagerImpl<'a> {
 }
 
 impl<'a> RepositoryManager for RepositoryManagerImpl<'a> {
-    type IsuAssociationConfigRepo = IsuAssociationConfigRepositoryImpl;
+    type IsuAssociationConfigRepo = IsuAssociationConfigRepositoryImpl<'a>;
     type UserRepo = UserRepositoryImpl<'a>;
 
     fn isu_accosiation_config_repository(&self) -> &Self::IsuAssociationConfigRepo {
