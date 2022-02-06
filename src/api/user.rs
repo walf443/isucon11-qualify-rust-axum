@@ -12,8 +12,8 @@ struct GetMeResponse {
     jia_user_id: String,
 }
 
-pub async fn get_me(
-    Extension(repo): Extension<Arc<RepositoryManagerImpl>>,
+pub async fn get_me<Repo: RepositoryManager>(
+    Extension(repo): Extension<Arc<Repo>>,
     cookies: Cookies,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let cookie = cookies.get("jia_user_id");

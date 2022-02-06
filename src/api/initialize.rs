@@ -20,8 +20,8 @@ struct PostInitializeResponse {
     language: String,
 }
 
-pub async fn post_initialize(
-    Extension(repo): Extension<Arc<RepositoryManagerImpl>>,
+pub async fn post_initialize<Repo: RepositoryManager>(
+    Extension(repo): Extension<Arc<Repo>>,
     Json(payload): Json<PostInitializeRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let status = tokio::process::Command::new("./sql/init.sh")

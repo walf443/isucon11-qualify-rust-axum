@@ -23,6 +23,8 @@ mod test_helper;
 mod api;
 pub mod model;
 
+type Repo = RepositoryManagerImpl;
+
 pub fn run<R: 'static + RepositoryManager>(
     listener: TcpListener,
     repo_manager: Arc<R>,
@@ -31,9 +33,9 @@ pub fn run<R: 'static + RepositoryManager>(
 
     let app = Router::new()
         .route("/", get(get_index))
-        .route("/initialize", post(post_initialize))
+        .route("/initialize", post(post_initialize::<Repo>))
         .route("/api/signout", post(post_signout))
-        .route("/api/user/me", get(get_me))
+        .route("/api/user/me", get(get_me::<Repo>))
         .route("/api/isu", get(get_isu_list).post(post_isu))
         .route("/api/isu/:jia_isu_uuid", get(get_isu_id))
         .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon))
@@ -43,7 +45,7 @@ pub fn run<R: 'static + RepositoryManager>(
             get(get_isu_conditions).post(post_isu_condition),
         )
         .route("/api/trend", get(get_trend))
-        .route("/api/auth", post(post_authentication))
+        .route("/api/auth", post(post_authentication::<Repo>))
         .layer(repo_manager_layer)
         .layer(CookieManagerLayer::new());
 
