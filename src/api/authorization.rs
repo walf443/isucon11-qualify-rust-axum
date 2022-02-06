@@ -40,7 +40,7 @@ pub async fn post_authentication(
     let claims: Claims = token.claims;
     let jia_user_id = claims.jia_user_id;
 
-    let user_repo = UserRepositoryImpl { pool: pool.0 };
+    let user_repo = UserRepositoryImpl { pool: &pool.0 };
     user_repo
         .insert(jia_user_id.to_string())
         .await

@@ -2,6 +2,7 @@ use crate::api::authorization::{post_authentication, post_signout};
 use crate::api::initialize::post_initialize;
 use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
+use crate::api::user::get_me;
 use crate::api::{get_index, get_trend};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -13,7 +14,6 @@ use std::future::Future;
 use std::net::TcpListener;
 use std::time::Duration;
 use tower_cookies::CookieManagerLayer;
-use crate::api::user::get_me;
 
 #[cfg(test)]
 mod test_helper;
