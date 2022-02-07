@@ -1,9 +1,9 @@
 use crate::model::user_repository::UserRepository;
 use crate::model::RepositoryManager;
-use crate::{IntoResponse, MySqlPool, StatusCode};
+use crate::{IntoResponse, StatusCode};
 use axum::extract::{Extension, TypedHeader};
 use axum::headers::authorization::Bearer;
-use axum::{extract, headers, Json};
+use axum::{headers, Json};
 use std::sync::Arc;
 use tower_cookies::{Cookie, Cookies};
 use tracing::log;

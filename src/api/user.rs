@@ -1,7 +1,7 @@
-use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
-use crate::{IntoResponse, MySqlPool, RepositoryManager, RepositoryManagerImpl, StatusCode};
+use crate::model::user_repository::UserRepository;
+use crate::{IntoResponse, RepositoryManager, StatusCode};
 use axum::extract::Extension;
-use axum::{extract, Json};
+use axum::Json;
 use serde::Serialize;
 use std::sync::Arc;
 use tower_cookies::Cookies;

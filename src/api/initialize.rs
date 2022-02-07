@@ -1,10 +1,8 @@
-use crate::model::isu_association_config_repository::{
-    IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl,
-};
-use crate::{IntoResponse, MySqlPool, RepositoryManager, RepositoryManagerImpl};
+use crate::model::isu_association_config_repository::IsuAssociationConfigRepository;
+use crate::{IntoResponse, RepositoryManager, RepositoryManagerImpl};
 use axum::extract::Extension;
 use axum::http::StatusCode;
-use axum::{extract, Json};
+use axum::Json;
 use serde::Deserialize;
 use serde::Serialize;
 use std::sync::Arc;

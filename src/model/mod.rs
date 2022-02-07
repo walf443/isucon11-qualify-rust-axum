@@ -3,7 +3,6 @@ use crate::model::isu_association_config_repository::{
 };
 use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
 use sqlx::MySqlPool;
-use std::sync::Arc;
 
 pub mod cleaner;
 pub mod isu_association_config_repository;
