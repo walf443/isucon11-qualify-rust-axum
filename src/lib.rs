@@ -54,7 +54,7 @@ pub fn run<R: 'static + RepositoryManager>(
     Ok(server)
 }
 
-pub async fn get_db_connection(config: &DBConfig) -> MySqlPool {
+pub async fn get_db_connection(config: DBConfig) -> MySqlPool {
     let pool = sqlx::mysql::MySqlPoolOptions::new()
         .connect_timeout(config.connect_timeout)
         .after_connect(|conn| {
@@ -74,6 +74,11 @@ pub async fn get_db_connection(config: &DBConfig) -> MySqlPool {
         .await
         .expect("can't connect db");
     pool
+}
+
+#[cfg(test)]
+pub async fn get_db_connection_for_test() -> MySqlPool {
+    get_db_connection(DBConfig::default_for_test()).await
 }
 
 #[derive(Debug)]

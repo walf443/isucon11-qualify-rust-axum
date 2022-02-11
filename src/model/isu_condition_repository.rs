@@ -33,12 +33,11 @@ mod test {
     use crate::model::isu_condition_repository::{
         IsuConditionRepository, IsuConditionRepositoryImpl,
     };
-    use crate::{get_db_connection, DBConfig};
+    use crate::{get_db_connection_for_test};
 
     #[tokio::test]
     async fn test_find_last_by_isu_id_with_empty() -> Result<(), sqlx::Error> {
-        let dbconf = DBConfig::default_for_test();
-        let pool = get_db_connection(&dbconf).await;
+        let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("isu_condition").await?;
@@ -55,8 +54,7 @@ mod test {
 
     #[tokio::test]
     async fn test_find_last_by_isu_id_with_result() -> Result<(), sqlx::Error> {
-        let dbconf = DBConfig::default_for_test();
-        let pool = get_db_connection(&dbconf).await;
+        let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("isu_condition").await?;

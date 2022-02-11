@@ -41,12 +41,11 @@ impl UserRepository for UserRepositoryImpl {
 mod tests {
     use crate::model::cleaner::tests::Cleaner;
     use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
-    use crate::{get_db_connection, DBConfig};
+    use crate::{get_db_connection_for_test};
 
     #[tokio::test]
     async fn test_user_repository_insert() -> Result<(), sqlx::Error> {
-        let dbconfg = DBConfig::default_for_test();
-        let pool = get_db_connection(&dbconfg).await;
+        let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
 
@@ -68,8 +67,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_user_repository_count_with_result() -> Result<(), sqlx::Error> {
-        let dbconfg = DBConfig::default_for_test();
-        let pool = get_db_connection(&dbconfg).await;
+        let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
 
@@ -89,8 +87,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_user_repository_count_without_result() -> Result<(), sqlx::Error> {
-        let dbconfg = DBConfig::default_for_test();
-        let pool = get_db_connection(&dbconfg).await;
+        let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
         let repo = UserRepositoryImpl { pool: pool };

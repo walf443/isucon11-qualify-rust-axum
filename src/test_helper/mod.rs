@@ -1,4 +1,4 @@
-use crate::{get_db_connection, run, DBConfig, RepositoryManagerImpl};
+use crate::{run, RepositoryManagerImpl, get_db_connection_for_test};
 use reqwest::Url;
 use sqlx::MySqlPool;
 use std::net::TcpListener;
@@ -11,8 +11,7 @@ pub struct TestApp {
 }
 
 pub async fn spawn_app() -> TestApp {
-    let dbconf = DBConfig::default_for_test();
-    let pool = get_db_connection(&dbconf).await;
+    let pool = get_db_connection_for_test().await;
     let repo_manager = RepositoryManagerImpl::new(pool.clone());
 
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
