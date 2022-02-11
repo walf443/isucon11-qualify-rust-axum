@@ -28,12 +28,12 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
 
 #[cfg(test)]
 mod test {
+    use crate::get_db_connection_for_test;
     use crate::model::cleaner::tests::Cleaner;
     use crate::model::isu_condition::IsuCondition;
     use crate::model::isu_condition_repository::{
         IsuConditionRepository, IsuConditionRepositoryImpl,
     };
-    use crate::{get_db_connection_for_test};
 
     #[tokio::test]
     async fn test_find_last_by_isu_id_with_empty() -> Result<(), sqlx::Error> {

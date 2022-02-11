@@ -30,9 +30,9 @@ impl IsuRepository for IsuRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
+    use crate::get_db_connection_for_test;
     use crate::model::cleaner::tests::Cleaner;
     use crate::model::isu_repository::{IsuRepository, IsuRepositoryImpl};
-    use crate::{get_db_connection_for_test};
 
     #[tokio::test]
     async fn test_find_all_by_user_id_empty() -> Result<(), sqlx::Error> {

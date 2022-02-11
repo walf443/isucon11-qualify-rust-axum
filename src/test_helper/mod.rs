@@ -1,4 +1,4 @@
-use crate::{run, RepositoryManagerImpl, get_db_connection_for_test};
+use crate::{get_db_connection_for_test, run, RepositoryManagerImpl};
 use reqwest::Url;
 use sqlx::MySqlPool;
 use std::net::TcpListener;

@@ -39,9 +39,9 @@ impl UserRepository for UserRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
+    use crate::get_db_connection_for_test;
     use crate::model::cleaner::tests::Cleaner;
     use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
-    use crate::{get_db_connection_for_test};
 
     #[tokio::test]
     async fn test_user_repository_insert() -> Result<(), sqlx::Error> {
