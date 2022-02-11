@@ -6,7 +6,7 @@ use sqlx::{Error, MySqlPool};
 pub trait IsuConditionRepository {
     async fn find_last_by_isu_id(
         &self,
-        jia_isu_uuid: String,
+        jia_isu_uuid: &str,
     ) -> Result<Option<IsuCondition>, sqlx::Error>;
 }
 
@@ -17,10 +17,7 @@ pub struct IsuConditionRepositoryImpl {
 
 #[async_trait]
 impl IsuConditionRepository for IsuConditionRepositoryImpl {
-    async fn find_last_by_isu_id(
-        &self,
-        jia_isu_uuid: String,
-    ) -> Result<Option<IsuCondition>, Error> {
+    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>, Error> {
         let result = sqlx::query_as!(IsuCondition, "SELECT id, jia_isu_uuid, is_sitting as `is_sitting: bool`, `condition`, message, created_at, `timestamp` FROM `isu_condition` WHERE `jia_isu_uuid` = ? ORDER BY `timestamp` DESC LIMIT 1", jia_isu_uuid).fetch_optional(&self.pool).await?;
         Ok(result)
     }
@@ -43,7 +40,7 @@ mod test {
         cleaner.prepare_table("isu_condition").await?;
 
         let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo.find_last_by_isu_id("1".to_string()).await?;
+        let condition = repo.find_last_by_isu_id("1").await?;
 
         assert!(condition.is_none());
 
@@ -74,7 +71,7 @@ mod test {
         ).execute(&pool).await?;
 
         let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo.find_last_by_isu_id("1".to_string()).await?;
+        let condition = repo.find_last_by_isu_id("1").await?;
 
         assert!(condition.is_some());
         let condition = condition.unwrap();
