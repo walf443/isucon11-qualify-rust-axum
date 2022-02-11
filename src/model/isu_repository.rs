@@ -1,5 +1,4 @@
 use crate::MySqlPool;
-use anyhow::Error;
 use async_trait::async_trait;
 
 pub struct Isu {
@@ -47,6 +46,8 @@ mod tests {
         let result = repo.find_all_by_user_id("1".to_string()).await?;
         assert_eq!(result.len(), 0);
 
+        cleaner.clean().await?;
+
         Ok(())
     }
 
@@ -76,6 +77,8 @@ mod tests {
         let repo = IsuRepositoryImpl { pool: pool };
         let result = repo.find_all_by_user_id("1".to_string()).await?;
         assert_eq!(result.len(), 3);
+
+        cleaner.clean().await?;
 
         Ok(())
     }
