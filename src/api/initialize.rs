@@ -58,8 +58,8 @@ pub async fn post_initialize<Repo: RepositoryManager>(
 #[cfg(test)]
 mod tests {
     use crate::api::initialize::{PostInitializeRequest, PostInitializeResponse};
-    use crate::model::cleaner::tests::Cleaner;
     use crate::{test_helper, StatusCode};
+    use isucondition_core::test::Cleaner;
 
     #[tokio::test]
     async fn test_post_initialize() -> anyhow::Result<()> {

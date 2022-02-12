@@ -18,7 +18,6 @@ use tower_cookies::CookieManagerLayer;
 mod test_helper;
 
 mod api;
-pub mod model;
 
 type Repo = RepositoryManagerImpl;
 
