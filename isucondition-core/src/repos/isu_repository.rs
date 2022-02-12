@@ -1,6 +1,6 @@
+use crate::models::isu::Isu;
 use async_trait::async_trait;
 use sqlx::MySqlPool;
-use crate::models::isu::Isu;
 
 #[async_trait]
 pub trait IsuRepository {

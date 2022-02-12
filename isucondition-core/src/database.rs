@@ -1,6 +1,6 @@
+use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::time::Duration;
-use sqlx::{Executor, MySqlPool};
 
 #[derive(Debug)]
 pub struct DBConfig {
@@ -66,5 +66,3 @@ pub async fn get_db_connection(config: DBConfig) -> MySqlPool {
 pub async fn get_db_connection_for_test() -> MySqlPool {
     get_db_connection(DBConfig::default_for_test()).await
 }
-
-

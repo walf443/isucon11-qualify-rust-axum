@@ -1,6 +1,6 @@
+use crate::models::isu_condition::IsuCondition;
 use async_trait::async_trait;
 use sqlx::{Error, MySqlPool};
-use crate::models::isu_condition::IsuCondition;
 
 #[async_trait]
 pub trait IsuConditionRepository {
@@ -27,7 +27,9 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
 mod test {
     use crate::database::get_db_connection_for_test;
     use crate::models::isu_condition::IsuCondition;
-    use crate::repos::isu_condition_repository::{IsuConditionRepository, IsuConditionRepositoryImpl};
+    use crate::repos::isu_condition_repository::{
+        IsuConditionRepository, IsuConditionRepositoryImpl,
+    };
     use crate::test::Cleaner;
 
     #[tokio::test]

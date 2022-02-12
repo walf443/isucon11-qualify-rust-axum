@@ -1,4 +1,3 @@
-
 #[derive(Debug)]
 pub struct Isu {
     pub id: i64,
@@ -7,4 +6,3 @@ pub struct Isu {
     pub name: String,
     pub character: Option<String>,
 }
-

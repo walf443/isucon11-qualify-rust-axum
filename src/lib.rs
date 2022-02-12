@@ -4,11 +4,11 @@ use crate::api::isu::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, pos
 use crate::api::isu_condition::{get_isu_conditions, post_isu_condition};
 use crate::api::user::get_me;
 use crate::api::{get_index, get_trend};
-use crate::model::{RepositoryManager, RepositoryManagerImpl};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{AddExtensionLayer, Router, Server};
+use isucondition_core::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
 use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::future::Future;

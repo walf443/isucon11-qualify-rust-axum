@@ -1,9 +1,9 @@
-use crate::model::user_repository::UserRepository;
-use crate::model::RepositoryManager;
 use crate::{IntoResponse, StatusCode};
 use axum::extract::{Extension, TypedHeader};
 use axum::headers::authorization::Bearer;
 use axum::{headers, Json};
+use isucondition_core::repos::repository_manager::RepositoryManager;
+use isucondition_core::repos::user_repository::UserRepository;
 use std::sync::Arc;
 use tower_cookies::{Cookie, Cookies};
 use tracing::log;

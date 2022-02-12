@@ -1,7 +1,8 @@
-use crate::model::user_repository::UserRepository;
-use crate::{IntoResponse, RepositoryManager, StatusCode};
+use crate::{IntoResponse, StatusCode};
 use axum::extract::Extension;
 use axum::Json;
+use isucondition_core::repos::repository_manager::RepositoryManager;
+use isucondition_core::repos::user_repository::UserRepository;
 use serde::Serialize;
 use std::sync::Arc;
 use tower_cookies::Cookies;

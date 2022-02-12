@@ -1,11 +1,12 @@
-use crate::model::isu_condition_repository::IsuConditionRepository;
-use crate::{IntoResponse, RepositoryManager, StatusCode};
+use crate::{IntoResponse, StatusCode};
 use axum::extract::{Extension, Path};
 use axum::Json;
+use isucondition_core::repos::isu_condition_repository::IsuConditionRepository;
+use isucondition_core::repos::isu_repository::IsuRepository;
+use isucondition_core::repos::repository_manager::RepositoryManager;
 use serde::Serialize;
 use std::sync::Arc;
 use tracing::error;
-use isucondition_core::repos::isu_repository::IsuRepository;
 
 #[derive(Serialize)]
 struct IsuEntity {
