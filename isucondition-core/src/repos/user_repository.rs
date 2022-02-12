@@ -1,6 +1,6 @@
+use crate::database::DBConnectionPool;
 use crate::repos::Result;
 use async_trait::async_trait;
-use sqlx::MySqlPool;
 
 #[async_trait]
 pub trait UserRepository {
@@ -10,7 +10,7 @@ pub trait UserRepository {
 
 #[derive(Clone)]
 pub struct UserRepositoryImpl {
-    pub pool: MySqlPool,
+    pub pool: DBConnectionPool,
 }
 
 #[async_trait]

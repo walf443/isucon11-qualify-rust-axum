@@ -1,10 +1,10 @@
+use crate::database::DBConnectionPool;
 use crate::repos::isu_association_config_repository::{
     IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl,
 };
 use crate::repos::isu_condition_repository::{IsuConditionRepository, IsuConditionRepositoryImpl};
 use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
 use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
-use sqlx::MySqlPool;
 
 pub trait RepositoryManager: Clone + std::marker::Send + std::marker::Sync {
     type IsuRepo: IsuRepository;
@@ -27,7 +27,7 @@ pub struct RepositoryManagerImpl {
 }
 
 impl RepositoryManagerImpl {
-    pub fn new(pool: MySqlPool) -> Self {
+    pub fn new(pool: DBConnectionPool) -> Self {
         let isu_repoository = IsuRepositoryImpl { pool: pool.clone() };
         let isu_association_config_repository =
             IsuAssociationConfigRepositoryImpl { pool: pool.clone() };

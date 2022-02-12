@@ -1,15 +1,14 @@
 use crate::run;
-use isucondition_core::database::get_db_connection_for_test;
+use isucondition_core::database::{get_db_connection_for_test, DBConnectionPool};
 use isucondition_core::repos::repository_manager::RepositoryManagerImpl;
 use reqwest::Url;
-use sqlx::MySqlPool;
 use std::net::TcpListener;
 use std::sync::Arc;
 
 pub struct TestApp {
     pub address: String,
     pub url: Url,
-    pub database: MySqlPool,
+    pub database: DBConnectionPool,
 }
 
 pub async fn spawn_app() -> TestApp {

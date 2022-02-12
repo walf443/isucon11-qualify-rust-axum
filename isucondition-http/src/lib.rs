@@ -6,8 +6,6 @@ use crate::routes::isu_condition_routes::{get_isu_conditions, post_isu_condition
 use crate::routes::isu_routes::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::routes::user_routes::get_me;
 use crate::routes::{get_index, get_trend};
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
 use axum::routing::{get, post};
 use axum::{AddExtensionLayer, Router, Server};
 use isucondition_core::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};

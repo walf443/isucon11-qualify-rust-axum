@@ -1,15 +1,15 @@
+use crate::database::DBConnectionPool;
 use crate::repos::Result;
-use sqlx::MySqlPool;
 use tracing::error;
 
 pub struct Cleaner {
-    pool: sqlx::MySqlPool,
+    pool: DBConnectionPool,
     target_tables: Vec<String>,
     destroyed: bool,
 }
 
 impl Cleaner {
-    pub fn new(pool: MySqlPool) -> Self {
+    pub fn new(pool: DBConnectionPool) -> Self {
         Self {
             pool,
             target_tables: Vec::new(),

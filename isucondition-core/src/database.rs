@@ -2,6 +2,8 @@ use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::time::Duration;
 
+pub type DBConnectionPool = MySqlPool;
+
 #[derive(Debug)]
 pub struct DBConfig {
     host: String,
@@ -39,7 +41,7 @@ impl Default for DBConfig {
     }
 }
 
-pub async fn get_db_connection(config: DBConfig) -> MySqlPool {
+pub async fn get_db_connection(config: DBConfig) -> DBConnectionPool {
     let pool = sqlx::mysql::MySqlPoolOptions::new()
         .connect_timeout(config.connect_timeout)
         .after_connect(|conn| {
@@ -61,6 +63,6 @@ pub async fn get_db_connection(config: DBConfig) -> MySqlPool {
     pool
 }
 
-pub async fn get_db_connection_for_test() -> MySqlPool {
+pub async fn get_db_connection_for_test() -> DBConnectionPool {
     get_db_connection(DBConfig::default_for_test()).await
 }

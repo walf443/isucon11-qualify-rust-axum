@@ -1,7 +1,7 @@
+use crate::database::DBConnectionPool;
 use crate::models::isu::Isu;
 use crate::repos::Result;
 use async_trait::async_trait;
-use sqlx::MySqlPool;
 
 #[async_trait]
 pub trait IsuRepository {
@@ -10,7 +10,7 @@ pub trait IsuRepository {
 
 #[derive(Clone)]
 pub struct IsuRepositoryImpl {
-    pub pool: MySqlPool,
+    pub pool: DBConnectionPool,
 }
 
 #[async_trait]
