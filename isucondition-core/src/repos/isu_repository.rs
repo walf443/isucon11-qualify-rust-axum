@@ -1,10 +1,11 @@
 use crate::models::isu::Isu;
+use crate::repos::Result;
 use async_trait::async_trait;
 use sqlx::MySqlPool;
 
 #[async_trait]
 pub trait IsuRepository {
-    async fn find_all_by_user_id(&self, jia_user_id: String) -> Result<Vec<Isu>, sqlx::Error>;
+    async fn find_all_by_user_id(&self, jia_user_id: String) -> Result<Vec<Isu>>;
 }
 
 #[derive(Clone)]
@@ -14,7 +15,7 @@ pub struct IsuRepositoryImpl {
 
 #[async_trait]
 impl IsuRepository for IsuRepositoryImpl {
-    async fn find_all_by_user_id(&self, jia_user_id: String) -> Result<Vec<Isu>, sqlx::Error> {
+    async fn find_all_by_user_id(&self, jia_user_id: String) -> Result<Vec<Isu>> {
         let chairs = sqlx::query_as!(Isu, "SELECT id, jia_user_id, jia_isu_uuid, name, `character` FROM isu WHERE jia_user_id = ?", jia_user_id).fetch_all(&self.pool).await?;
 
         Ok(chairs)
@@ -25,10 +26,11 @@ impl IsuRepository for IsuRepositoryImpl {
 mod tests {
     use crate::database::get_db_connection_for_test;
     use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
+    use crate::repos::Result;
     use crate::test::Cleaner;
 
     #[tokio::test]
-    async fn test_find_all_by_user_id_empty() -> Result<(), sqlx::Error> {
+    async fn test_find_all_by_user_id_empty() -> Result<()> {
         let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());
@@ -44,7 +46,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_find_all_by_user_id_with_result() -> Result<(), sqlx::Error> {
+    async fn test_find_all_by_user_id_with_result() -> Result<()> {
         let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());

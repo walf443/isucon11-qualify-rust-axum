@@ -1,13 +1,11 @@
 use crate::models::isu_condition::IsuCondition;
+use crate::repos::Result;
 use async_trait::async_trait;
-use sqlx::{Error, MySqlPool};
+use sqlx::MySqlPool;
 
 #[async_trait]
 pub trait IsuConditionRepository {
-    async fn find_last_by_isu_id(
-        &self,
-        jia_isu_uuid: &str,
-    ) -> Result<Option<IsuCondition>, sqlx::Error>;
+    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>>;
 }
 
 #[derive(Clone)]
@@ -17,7 +15,7 @@ pub struct IsuConditionRepositoryImpl {
 
 #[async_trait]
 impl IsuConditionRepository for IsuConditionRepositoryImpl {
-    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>, Error> {
+    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>> {
         let result = sqlx::query_as!(IsuCondition, "SELECT id, jia_isu_uuid, is_sitting as `is_sitting: bool`, `condition`, message, created_at, `timestamp` FROM `isu_condition` WHERE `jia_isu_uuid` = ? ORDER BY `timestamp` DESC LIMIT 1", jia_isu_uuid).fetch_optional(&self.pool).await?;
         Ok(result)
     }
@@ -30,10 +28,11 @@ mod test {
     use crate::repos::isu_condition_repository::{
         IsuConditionRepository, IsuConditionRepositoryImpl,
     };
+    use crate::repos::Result;
     use crate::test::Cleaner;
 
     #[tokio::test]
-    async fn test_find_last_by_isu_id_with_empty() -> Result<(), sqlx::Error> {
+    async fn test_find_last_by_isu_id_with_empty() -> Result<()> {
         let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());
@@ -50,7 +49,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn test_find_last_by_isu_id_with_result() -> Result<(), sqlx::Error> {
+    async fn test_find_last_by_isu_id_with_result() -> Result<()> {
         let pool = get_db_connection_for_test().await;
 
         let mut cleaner = Cleaner::new(pool.clone());

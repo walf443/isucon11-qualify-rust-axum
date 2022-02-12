@@ -1,10 +1,11 @@
+use crate::repos::Result;
 use async_trait::async_trait;
 use sqlx::MySqlPool;
 
 #[async_trait]
 pub trait UserRepository {
-    async fn insert(&self, jia_user_id: String) -> Result<(), sqlx::Error>;
-    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64, sqlx::Error>;
+    async fn insert(&self, jia_user_id: String) -> Result<()>;
+    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64>;
 }
 
 #[derive(Clone)]
@@ -14,7 +15,7 @@ pub struct UserRepositoryImpl {
 
 #[async_trait]
 impl UserRepository for UserRepositoryImpl {
-    async fn insert(&self, jia_user_id: String) -> Result<(), sqlx::Error> {
+    async fn insert(&self, jia_user_id: String) -> Result<()> {
         sqlx::query!(
             "INSERT IGNORE INTO user (`jia_user_id`) VALUES (?)",
             jia_user_id
@@ -25,7 +26,7 @@ impl UserRepository for UserRepositoryImpl {
         Ok(())
     }
 
-    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64, sqlx::Error> {
+    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64> {
         let result = sqlx::query!(
             "SElECT COUNT(*) as count FROM user WHERE jia_user_id = ?",
             jia_user_id
@@ -41,10 +42,11 @@ impl UserRepository for UserRepositoryImpl {
 mod tests {
     use crate::database::get_db_connection_for_test;
     use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
+    use crate::repos::Result;
     use crate::test::Cleaner;
 
     #[tokio::test]
-    async fn test_user_repository_insert() -> Result<(), sqlx::Error> {
+    async fn test_user_repository_insert() -> Result<()> {
         let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
@@ -66,7 +68,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_user_repository_count_with_result() -> Result<(), sqlx::Error> {
+    async fn test_user_repository_count_with_result() -> Result<()> {
         let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
@@ -86,7 +88,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_user_repository_count_without_result() -> Result<(), sqlx::Error> {
+    async fn test_user_repository_count_without_result() -> Result<()> {
         let pool = get_db_connection_for_test().await;
         let mut cleaner = Cleaner::new(pool.clone());
         cleaner.prepare_table("user").await?;
