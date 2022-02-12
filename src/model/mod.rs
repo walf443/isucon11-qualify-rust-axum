@@ -3,15 +3,15 @@ use crate::model::isu_association_config_repository::{
 };
 use crate::model::isu_condition_repository::{IsuConditionRepository, IsuConditionRepositoryImpl};
 use crate::model::isu_repository::{IsuRepository, IsuRepositoryImpl};
-use crate::model::user_repository::{UserRepository, UserRepositoryImpl};
 use sqlx::MySqlPool;
+pub use isucondition_core::repos::user_repository;
+use isucondition_core::repos::user_repository::{UserRepository, UserRepositoryImpl};
 
 pub mod cleaner;
 pub mod isu_association_config_repository;
 pub mod isu_condition;
 pub mod isu_condition_repository;
 pub mod isu_repository;
-pub mod user_repository;
 
 pub trait RepositoryManager: Clone + std::marker::Send + std::marker::Sync {
     type IsuRepo: IsuRepository;
