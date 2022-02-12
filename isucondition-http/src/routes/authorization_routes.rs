@@ -1,6 +1,7 @@
-use crate::{IntoResponse, StatusCode};
 use axum::extract::{Extension, TypedHeader};
 use axum::headers::authorization::Bearer;
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::{headers, Json};
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::repos::user_repository::UserRepository;
@@ -66,6 +67,7 @@ pub async fn post_signout(cookies: Cookies) -> impl IntoResponse {
 #[cfg(test)]
 mod tests {
     use crate::{test_helper, StatusCode};
+    use axum::http::StatusCode;
 
     #[tokio::test]
     async fn test_post_signout() -> Result<(), sqlx::Error> {
