@@ -13,7 +13,6 @@ pub struct DBConfig {
 }
 
 impl DBConfig {
-    #[cfg(test)]
     pub fn default_for_test() -> Self {
         let mut config = Self::default();
         config.db_name =
@@ -62,7 +61,6 @@ pub async fn get_db_connection(config: DBConfig) -> MySqlPool {
     pool
 }
 
-#[cfg(test)]
 pub async fn get_db_connection_for_test() -> MySqlPool {
     get_db_connection(DBConfig::default_for_test()).await
 }
