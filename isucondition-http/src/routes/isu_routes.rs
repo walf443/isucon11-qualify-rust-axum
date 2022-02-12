@@ -1,5 +1,6 @@
-use crate::{IntoResponse, StatusCode};
 use axum::extract::{Extension, Path};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::Json;
 use isucondition_core::repos::isu_condition_repository::IsuConditionRepository;
 use isucondition_core::repos::isu_repository::IsuRepository;

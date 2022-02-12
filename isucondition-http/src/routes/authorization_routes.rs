@@ -66,7 +66,7 @@ pub async fn post_signout(cookies: Cookies) -> impl IntoResponse {
 
 #[cfg(test)]
 mod tests {
-    use crate::{test_helper, StatusCode};
+    use crate::test_helper;
     use axum::http::StatusCode;
 
     #[tokio::test]

@@ -1,6 +1,6 @@
-use crate::IntoResponse;
 use axum::extract::Extension;
 use axum::http::StatusCode;
+use axum::response::IntoResponse;
 use axum::Json;
 use isucondition_core::repos::isu_association_config_repository::IsuAssociationConfigRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
@@ -23,7 +23,7 @@ pub async fn post_initialize<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
     Json(payload): Json<PostInitializeRequest>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let status = tokio::process::Command::new("./sql/init.sh")
+    let status = tokio::process::Command::new("../sql/init.sh")
         .status()
         .await
         .map_err(|e| {
@@ -57,8 +57,9 @@ pub async fn post_initialize<Repo: RepositoryManager>(
 
 #[cfg(test)]
 mod tests {
-    use crate::api::initialize::{PostInitializeRequest, PostInitializeResponse};
-    use crate::{test_helper, StatusCode};
+    use crate::routes::initialize_routes::{PostInitializeRequest, PostInitializeResponse};
+    use crate::test_helper;
+    use axum::http::StatusCode;
     use isucondition_core::test::Cleaner;
 
     #[tokio::test]
