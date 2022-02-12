@@ -667,6 +667,7 @@ dependencies = [
  "chrono",
  "hyper",
  "isucondition-core",
+ "isucondition-http",
  "jsonwebtoken",
  "lazy_static",
  "reqwest",
@@ -691,6 +692,21 @@ dependencies = [
  "serde_json",
  "sqlx",
  "tokio",
+ "tracing",
+]
+
+[[package]]
+name = "isucondition-http"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "isucondition-core",
+ "jsonwebtoken",
+ "lazy_static",
+ "serde",
+ "serde_json",
+ "tower",
+ "tower-cookies",
  "tracing",
 ]
 

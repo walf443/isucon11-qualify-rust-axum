@@ -5,7 +5,6 @@ pub mod authorization;
 pub mod initialize;
 pub mod isu;
 pub mod isu_condition;
-pub mod user;
 
 pub async fn get_trend() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
