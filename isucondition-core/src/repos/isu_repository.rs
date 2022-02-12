@@ -1,5 +1,5 @@
-use crate::MySqlPool;
 use async_trait::async_trait;
+use sqlx::MySqlPool;
 
 pub struct Isu {
     pub id: i64,
@@ -33,6 +33,8 @@ mod tests {
     use crate::get_db_connection_for_test;
     use crate::model::cleaner::tests::Cleaner;
     use crate::model::isu_repository::{IsuRepository, IsuRepositoryImpl};
+    use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
+    use crate::test::Cleaner;
 
     #[tokio::test]
     async fn test_find_all_by_user_id_empty() -> Result<(), sqlx::Error> {
