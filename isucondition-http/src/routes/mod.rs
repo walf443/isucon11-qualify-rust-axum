@@ -21,7 +21,7 @@ mod tests {
     use crate::test_helper;
 
     #[tokio::test]
-    async fn test_get_index() -> Result<(), sqlx::Error> {
+    async fn test_get_index() -> Result<(), anyhow::Error> {
         let app = test_helper::spawn_app().await;
         let client = reqwest::Client::new();
         let res = client

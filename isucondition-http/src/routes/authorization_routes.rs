@@ -70,7 +70,7 @@ mod tests {
     use axum::http::StatusCode;
 
     #[tokio::test]
-    async fn test_post_signout() -> Result<(), sqlx::Error> {
+    async fn test_post_signout() -> Result<(), anyhow::Error> {
         let app = test_helper::spawn_app().await;
 
         let client = reqwest::Client::new();

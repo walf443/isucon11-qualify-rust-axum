@@ -1,3 +1,4 @@
+use crate::repos::Result;
 use sqlx::MySqlPool;
 use tracing::error;
 
@@ -16,7 +17,7 @@ impl Cleaner {
         }
     }
 
-    pub async fn prepare_table(&mut self, table: &str) -> Result<(), sqlx::Error> {
+    pub async fn prepare_table(&mut self, table: &str) -> Result<()> {
         let _ = &self.target_tables.push(table.into());
 
         // if it was occured a panic when previous test, Cleaner can't clean table.
@@ -25,7 +26,7 @@ impl Cleaner {
         Ok(())
     }
 
-    pub async fn prepare_tables(&mut self, tables: Vec<String>) -> Result<(), sqlx::Error> {
+    pub async fn prepare_tables(&mut self, tables: Vec<String>) -> Result<()> {
         for table in tables {
             self.prepare_table(&table).await?;
         }
@@ -33,7 +34,7 @@ impl Cleaner {
         Ok(())
     }
 
-    async fn truncate_table(&self, table: &str) -> Result<(), sqlx::Error> {
+    async fn truncate_table(&self, table: &str) -> Result<()> {
         // check table name string
         let sql = format!("TRUNCATE TABLE `{}`", table);
         sqlx::query(&sql).execute(&self.pool).await?;
@@ -41,7 +42,7 @@ impl Cleaner {
         Ok(())
     }
 
-    pub async fn clean(&mut self) -> Result<(), sqlx::Error> {
+    pub async fn clean(&mut self) -> Result<()> {
         for table in &self.target_tables {
             self.truncate_table(table).await?;
         }
