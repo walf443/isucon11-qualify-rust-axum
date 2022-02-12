@@ -14,3 +14,4 @@ anyhow = "1.0.53"
 async-trait = "0.1.52"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1.30"
+thiserror = "1.0.30"
