@@ -1,4 +1,5 @@
 use sqlx::MySqlPool;
+use tracing::error;
 
 pub struct Cleaner {
     pool: sqlx::MySqlPool,

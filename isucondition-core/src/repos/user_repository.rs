@@ -39,6 +39,7 @@ impl UserRepository for UserRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
+    use crate::database::get_db_connection_for_test;
     use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
     use crate::test::Cleaner;
 

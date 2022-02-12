@@ -25,11 +25,7 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
 
 #[cfg(test)]
 mod test {
-    use crate::get_db_connection_for_test;
-    use crate::model::isu_condition::IsuCondition;
-    use crate::model::isu_condition_repository::{
-        IsuConditionRepository, IsuConditionRepositoryImpl,
-    };
+    use crate::database::get_db_connection_for_test;
     use crate::models::isu_condition::IsuCondition;
     use crate::repos::isu_condition_repository::{IsuConditionRepository, IsuConditionRepositoryImpl};
     use crate::test::Cleaner;

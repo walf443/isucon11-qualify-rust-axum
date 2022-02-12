@@ -1,5 +1,4 @@
 use sqlx::types::time::PrimitiveDateTime;
-use sqlx::Error;
 
 #[derive(Debug, PartialEq)]
 pub struct IsuCondition {

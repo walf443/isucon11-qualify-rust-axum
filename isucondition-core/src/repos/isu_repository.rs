@@ -30,9 +30,7 @@ impl IsuRepository for IsuRepositoryImpl {
 
 #[cfg(test)]
 mod tests {
-    use crate::get_db_connection_for_test;
-    use crate::model::cleaner::tests::Cleaner;
-    use crate::model::isu_repository::{IsuRepository, IsuRepositoryImpl};
+    use crate::database::get_db_connection_for_test;
     use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
     use crate::test::Cleaner;
 
