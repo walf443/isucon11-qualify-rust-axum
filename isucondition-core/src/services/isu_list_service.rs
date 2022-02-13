@@ -1,5 +1,6 @@
 use crate::models::isu::Isu;
 use crate::models::isu_condition::IsuCondition;
+use crate::models::user::UserID;
 use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
@@ -16,7 +17,7 @@ impl<R: RepositoryManager> IsuListService<R> {
         Self { repo }
     }
 
-    pub async fn run(&self, jia_user_id: String) -> Result<Vec<IsuWithCondition>> {
+    pub async fn run(&self, jia_user_id: UserID) -> Result<Vec<IsuWithCondition>> {
         let chairs = self
             .repo
             .isu_repository()

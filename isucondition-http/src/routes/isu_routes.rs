@@ -5,6 +5,7 @@ use axum::response::IntoResponse;
 use axum::Json;
 use isucondition_core::models::isu::Isu;
 use isucondition_core::models::isu_condition::IsuCondition;
+use isucondition_core::models::user::UserID;
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::services::isu_list_service::{IsuListService, IsuWithCondition};
 use serde::Serialize;
@@ -15,10 +16,13 @@ pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let service = IsuListService::new(repo.as_ref().clone());
-    let list = service.run("1".to_string()).await.map_err(|err| {
-        error!("error: {:?}", err);
-        (StatusCode::INTERNAL_SERVER_ERROR, "error".to_string())
-    })?;
+    let list = service
+        .run(UserID::new("1".to_string()))
+        .await
+        .map_err(|err| {
+            error!("error: {:?}", err);
+            (StatusCode::INTERNAL_SERVER_ERROR, "error".to_string())
+        })?;
 
     let list: Vec<IsuResponse> = list.into_iter().map(|isu| isu.into()).collect();
 

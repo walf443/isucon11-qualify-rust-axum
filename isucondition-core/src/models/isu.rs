@@ -1,3 +1,4 @@
+use crate::models::user::UserID;
 use sqlx::Type;
 use std::fmt::{Display, Formatter};
 
@@ -32,7 +33,7 @@ impl Display for IsuUUID {
 #[derive(Debug)]
 pub struct Isu {
     pub id: IsuID,
-    pub jia_user_id: String,
+    pub jia_user_id: UserID,
     pub jia_isu_uuid: IsuUUID,
     pub name: String,
     pub character: Option<String>,
