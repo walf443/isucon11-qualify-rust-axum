@@ -1,31 +1,14 @@
+use crate::models::isu::Isu;
+use crate::models::isu_condition::IsuCondition;
 use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
 use crate::repos::Result;
-use serde::Serialize;
+
+pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 
 pub struct IsuListService<R: RepositoryManager> {
     repo: R,
-}
-
-#[derive(Serialize)]
-pub struct IsuEntity {
-    id: String,
-    jia_isu_uuid: String,
-    name: String,
-    character: Option<String>,
-    latest_isu_condition: Option<IsuConditionEntity>,
-}
-
-#[derive(Serialize)]
-pub struct IsuConditionEntity {
-    jia_isu_uuid: String,
-    isu_name: String,
-    timestamp: i64,
-    is_sitting: bool,
-    condition: String,
-    condition_level: &'static str,
-    message: String,
 }
 
 impl<R: RepositoryManager> IsuListService<R> {
@@ -33,14 +16,14 @@ impl<R: RepositoryManager> IsuListService<R> {
         Self { repo }
     }
 
-    pub async fn run(&self, jia_user_id: String) -> Result<Vec<IsuEntity>> {
+    pub async fn run(&self, jia_user_id: String) -> Result<Vec<IsuWithCondition>> {
         let chairs = self
             .repo
             .isu_repository()
             .find_all_by_user_id(jia_user_id)
             .await?;
 
-        let list: Vec<IsuEntity> = Vec::new();
+        let mut list: Vec<IsuWithCondition> = Vec::new();
 
         for chair in chairs {
             let last_isu_condition = self
@@ -49,18 +32,7 @@ impl<R: RepositoryManager> IsuListService<R> {
                 .find_last_by_isu_id(&chair.jia_isu_uuid)
                 .await?;
 
-            let last_condition_entity = match last_isu_condition {
-                Some(condition) => Some(IsuConditionEntity {
-                    jia_isu_uuid: condition.jia_isu_uuid.to_string(),
-                    isu_name: chair.name.clone(),
-                    timestamp: condition.timestamp.timestamp(),
-                    is_sitting: condition.is_sitting,
-                    condition: condition.condition,
-                    condition_level: "",
-                    message: condition.message,
-                }),
-                None => None,
-            };
+            list.push((chair, last_isu_condition));
         }
 
         Ok(list)
