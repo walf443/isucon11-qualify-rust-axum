@@ -39,3 +39,23 @@ impl<R: RepositoryManager> IsuListService<R> {
         Ok(list)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::database::get_db_connection_for_test;
+    use crate::models::user::UserID;
+    use crate::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
+    use crate::repos::Result;
+    use crate::services::isu_list_service::IsuListService;
+
+    #[tokio::test]
+    async fn test_isu_list_service() -> Result<()> {
+        let pool = get_db_connection_for_test().await;
+        let repo = RepositoryManagerImpl::new(pool.clone());
+        let service = IsuListService::new(repo);
+        let result = service.run(UserID::new("test".to_string())).await?;
+        assert_eq!(result.len(), 0);
+
+        Ok(())
+    }
+}
