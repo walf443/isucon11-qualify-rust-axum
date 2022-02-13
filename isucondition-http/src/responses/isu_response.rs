@@ -25,7 +25,7 @@ impl From<IsuWithCondition> for IsuResponse {
     fn from((isu, latest_isu_condition): IsuWithCondition) -> Self {
         let condition = match latest_isu_condition {
             Some(condition) => Some(IsuConditionResponse {
-                jia_isu_uuid: condition.jia_isu_uuid,
+                jia_isu_uuid: condition.jia_isu_uuid.to_string(),
                 isu_name: isu.name.clone(),
                 timestamp: condition.timestamp.timestamp(),
                 is_sitting: condition.is_sitting,
@@ -37,7 +37,7 @@ impl From<IsuWithCondition> for IsuResponse {
         };
         Self {
             id: isu.id.to_string(),
-            jia_isu_uuid: isu.jia_isu_uuid,
+            jia_isu_uuid: isu.jia_isu_uuid.to_string(),
             name: isu.name,
             character: isu.character,
             latest_isu_condition: condition,

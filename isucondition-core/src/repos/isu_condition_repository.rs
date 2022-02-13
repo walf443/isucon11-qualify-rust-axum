@@ -1,11 +1,13 @@
 use crate::database::DBConnectionPool;
+use crate::models::isu::IsuUUID;
 use crate::models::isu_condition::IsuCondition;
+use crate::models::isu_condition::IsuConditionID;
 use crate::repos::Result;
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait IsuConditionRepository {
-    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>>;
+    async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>>;
 }
 
 #[derive(Clone)]
@@ -15,8 +17,24 @@ pub struct IsuConditionRepositoryImpl {
 
 #[async_trait]
 impl IsuConditionRepository for IsuConditionRepositoryImpl {
-    async fn find_last_by_isu_id(&self, jia_isu_uuid: &str) -> Result<Option<IsuCondition>> {
-        let result = sqlx::query_as!(IsuCondition, "SELECT id, jia_isu_uuid, is_sitting as `is_sitting: bool`, `condition`, message, created_at, `timestamp` FROM `isu_condition` WHERE `jia_isu_uuid` = ? ORDER BY `timestamp` DESC LIMIT 1", jia_isu_uuid).fetch_optional(&self.pool).await?;
+    async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>> {
+        let result = sqlx::query_as!(
+            IsuCondition,
+            r##"SELECT
+                    id AS `id:IsuConditionID`,
+                    jia_isu_uuid AS `jia_isu_uuid:IsuUUID`,
+                    is_sitting as `is_sitting: bool`,
+                    `condition`,
+                    message,
+                    created_at,
+                    `timestamp`
+                FROM `isu_condition`
+                WHERE `jia_isu_uuid` = ?
+                ORDER BY `timestamp` DESC LIMIT 1"##,
+            jia_isu_uuid.to_string(),
+        )
+        .fetch_optional(&self.pool)
+        .await?;
         Ok(result)
     }
 }
@@ -24,6 +42,7 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
 #[cfg(test)]
 mod test {
     use crate::database::get_db_connection_for_test;
+    use crate::models::isu::IsuUUID;
     use crate::models::isu_condition::IsuCondition;
     use crate::repos::isu_condition_repository::{
         IsuConditionRepository, IsuConditionRepositoryImpl,
@@ -39,7 +58,9 @@ mod test {
         cleaner.prepare_table("isu_condition").await?;
 
         let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo.find_last_by_isu_id("1").await?;
+        let condition = repo
+            .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
+            .await?;
 
         assert!(condition.is_none());
 
@@ -70,16 +91,18 @@ mod test {
         ).execute(&pool).await?;
 
         let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo.find_last_by_isu_id("1").await?;
+        let condition = repo
+            .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
+            .await?;
 
         assert!(condition.is_some());
         let condition = condition.unwrap();
         assert_eq!(
             IsuCondition {
-                id: condition.id,
+                id: condition.id.clone(),
                 timestamp: condition.timestamp.clone(),
                 created_at: condition.created_at.clone(),
-                jia_isu_uuid: "1".to_string(),
+                jia_isu_uuid: IsuUUID::new("1".to_string()),
                 is_sitting: true,
                 condition: "".to_string(),
                 message: "test".to_string(),

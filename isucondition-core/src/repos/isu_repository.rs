@@ -1,5 +1,5 @@
 use crate::database::DBConnectionPool;
-use crate::models::isu::Isu;
+use crate::models::isu::{Isu, IsuID, IsuUUID};
 use crate::repos::Result;
 use async_trait::async_trait;
 
@@ -16,7 +16,19 @@ pub struct IsuRepositoryImpl {
 #[async_trait]
 impl IsuRepository for IsuRepositoryImpl {
     async fn find_all_by_user_id(&self, jia_user_id: String) -> Result<Vec<Isu>> {
-        let chairs = sqlx::query_as!(Isu, "SELECT id, jia_user_id, jia_isu_uuid, name, `character` FROM isu WHERE jia_user_id = ?", jia_user_id).fetch_all(&self.pool).await?;
+        let chairs = sqlx::query_as!(
+            Isu,
+            r##"SELECT
+                id as `id:IsuID`,
+                jia_user_id,
+                jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
+                name,
+                `character`
+            FROM isu WHERE jia_user_id = ?"##,
+            jia_user_id
+        )
+        .fetch_all(&self.pool)
+        .await?;
 
         Ok(chairs)
     }
