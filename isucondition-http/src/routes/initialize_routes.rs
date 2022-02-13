@@ -39,7 +39,7 @@ pub async fn post_initialize<Repo: RepositoryManager>(
         ));
     }
 
-    repo.isu_accosiation_config_repository()
+    repo.isu_association_config_repository()
         .insert("jia_service_url", &payload.jia_service_url)
         .await
         .map_err(|e| {

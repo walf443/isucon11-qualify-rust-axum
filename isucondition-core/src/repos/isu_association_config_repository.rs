@@ -2,6 +2,7 @@ use crate::database::DBConnectionPool;
 use crate::repos::Result;
 use async_trait::async_trait;
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait IsuAssociationConfigRepository {
     async fn insert(&self, name: &str, url: &str) -> Result<()>;

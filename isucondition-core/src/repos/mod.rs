@@ -8,6 +8,8 @@ pub mod repository_manager;
 use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("error for testing")]
+    TestError(),
     #[error("failed to execute query")]
     SqlError(#[from] sqlx::Error),
 }

@@ -7,8 +7,7 @@ use isucondition_core::models::isu::Isu;
 use isucondition_core::models::isu_condition::IsuCondition;
 use isucondition_core::models::user::UserID;
 use isucondition_core::repos::repository_manager::RepositoryManager;
-use isucondition_core::services::isu_list_service::{IsuListService, IsuWithCondition};
-use serde::Serialize;
+use isucondition_core::services::isu_list_service::IsuListService;
 use std::sync::Arc;
 use tracing::error;
 

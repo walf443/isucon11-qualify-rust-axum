@@ -4,6 +4,7 @@ use crate::models::user::UserID;
 use crate::repos::Result;
 use async_trait::async_trait;
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait IsuRepository {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;

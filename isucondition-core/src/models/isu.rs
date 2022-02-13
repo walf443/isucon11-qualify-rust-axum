@@ -1,5 +1,4 @@
 use crate::models::user::UserID;
-use sqlx::Type;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, sqlx::Type)]

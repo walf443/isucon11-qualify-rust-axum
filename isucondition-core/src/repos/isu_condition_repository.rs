@@ -5,6 +5,7 @@ use crate::models::isu_condition::IsuConditionID;
 use crate::repos::Result;
 use async_trait::async_trait;
 
+#[cfg_attr(test, mockall::automock)]
 #[async_trait]
 pub trait IsuConditionRepository {
     async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>>;
