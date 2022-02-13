@@ -1,11 +1,12 @@
 use crate::database::DBConnectionPool;
+use crate::models::user::UserID;
 use crate::repos::Result;
 use async_trait::async_trait;
 
 #[async_trait]
 pub trait UserRepository {
     async fn insert(&self, jia_user_id: String) -> Result<()>;
-    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64>;
+    async fn count_by_user_id(&self, jia_user_id: &UserID) -> Result<i64>;
 }
 
 #[derive(Clone)]
@@ -26,10 +27,10 @@ impl UserRepository for UserRepositoryImpl {
         Ok(())
     }
 
-    async fn count_by_user_id(&self, jia_user_id: String) -> Result<i64> {
+    async fn count_by_user_id(&self, jia_user_id: &UserID) -> Result<i64> {
         let result = sqlx::query!(
             "SElECT COUNT(*) as count FROM user WHERE jia_user_id = ?",
-            jia_user_id
+            jia_user_id.to_string()
         )
         .fetch_one(&self.pool)
         .await?;
@@ -41,6 +42,7 @@ impl UserRepository for UserRepositoryImpl {
 #[cfg(test)]
 mod tests {
     use crate::database::get_db_connection_for_test;
+    use crate::models::user::UserID;
     use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
     use crate::repos::Result;
     use crate::test::Cleaner;
@@ -79,7 +81,7 @@ mod tests {
 
         let repo = UserRepositoryImpl { pool: pool };
 
-        let result = repo.count_by_user_id("1".to_string()).await?;
+        let result = repo.count_by_user_id(&UserID::new("1".to_string())).await?;
         assert_eq!(result, 1);
 
         cleaner.clean().await?;
@@ -94,7 +96,7 @@ mod tests {
         cleaner.prepare_table("user").await?;
         let repo = UserRepositoryImpl { pool: pool };
 
-        let result = repo.count_by_user_id("1".to_string()).await?;
+        let result = repo.count_by_user_id(&UserID::new("1".to_string())).await?;
         assert_eq!(0, result);
 
         cleaner.clean().await?;

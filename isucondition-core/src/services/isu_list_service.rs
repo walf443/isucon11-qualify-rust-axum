@@ -21,7 +21,7 @@ impl<R: RepositoryManager> IsuListService<R> {
         let chairs = self
             .repo
             .isu_repository()
-            .find_all_by_user_id(jia_user_id)
+            .find_all_by_user_id(&jia_user_id)
             .await?;
 
         let mut list: Vec<IsuWithCondition> = Vec::new();

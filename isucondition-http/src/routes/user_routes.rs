@@ -2,6 +2,7 @@ use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
+use isucondition_core::models::user::UserID;
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::repos::user_repository::UserRepository;
 use serde::Serialize;
@@ -30,7 +31,7 @@ pub async fn get_me<Repo: RepositoryManager>(
 
     match repo
         .user_repository()
-        .count_by_user_id(jia_user_id.to_string())
+        .count_by_user_id(&UserID::new(jia_user_id.to_string()))
         .await
     {
         Ok(_) => Ok((

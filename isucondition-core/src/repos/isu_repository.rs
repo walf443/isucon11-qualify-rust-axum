@@ -6,7 +6,7 @@ use async_trait::async_trait;
 
 #[async_trait]
 pub trait IsuRepository {
-    async fn find_all_by_user_id(&self, jia_user_id: UserID) -> Result<Vec<Isu>>;
+    async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;
 }
 
 #[derive(Clone)]
@@ -16,7 +16,7 @@ pub struct IsuRepositoryImpl {
 
 #[async_trait]
 impl IsuRepository for IsuRepositoryImpl {
-    async fn find_all_by_user_id(&self, jia_user_id: UserID) -> Result<Vec<Isu>> {
+    async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>> {
         let chairs = sqlx::query_as!(
             Isu,
             r##"SELECT
@@ -52,7 +52,7 @@ mod tests {
 
         let repo = IsuRepositoryImpl { pool: pool };
         let result = repo
-            .find_all_by_user_id(UserID::new("1".to_string()))
+            .find_all_by_user_id(&UserID::new("1".to_string()))
             .await?;
         assert_eq!(result.len(), 0);
 
@@ -85,7 +85,7 @@ mod tests {
 
         let repo = IsuRepositoryImpl { pool: pool };
         let result = repo
-            .find_all_by_user_id(UserID::new("1".to_string()))
+            .find_all_by_user_id(&UserID::new("1".to_string()))
             .await?;
         assert_eq!(result.len(), 3);
 
