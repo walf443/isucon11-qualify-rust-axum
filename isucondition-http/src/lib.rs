@@ -1,4 +1,5 @@
-pub mod routes;
+mod responses;
+mod routes;
 
 use crate::routes::authorization_routes::{post_authentication, post_signout};
 use crate::routes::initialize_routes::post_initialize;
