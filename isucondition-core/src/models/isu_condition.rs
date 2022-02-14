@@ -1,5 +1,5 @@
 use crate::models::isu::IsuUUID;
-use sqlx::types::time::PrimitiveDateTime;
+use chrono::NaiveDateTime;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, sqlx::Type, PartialEq, Clone)]
@@ -24,6 +24,6 @@ pub struct IsuCondition {
     pub is_sitting: bool,
     pub condition: String,
     pub message: String,
-    pub timestamp: PrimitiveDateTime,
-    pub created_at: Option<PrimitiveDateTime>,
+    pub timestamp: NaiveDateTime,
+    pub created_at: Option<NaiveDateTime>,
 }

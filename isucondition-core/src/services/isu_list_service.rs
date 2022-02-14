@@ -49,7 +49,7 @@ mod tests {
     use crate::repos::repository_manager::tests::MockRepositoryManager;
     use crate::repos::Result;
     use crate::services::isu_list_service::IsuListService;
-    use sqlx::types::time::PrimitiveDateTime;
+    use chrono::NaiveDateTime;
 
     #[tokio::test]
     async fn test_isu_list_service_with_empty_list() -> Result<()> {
@@ -116,7 +116,7 @@ mod tests {
                         is_sitting: false,
                         condition: "".to_string(),
                         message: "".to_string(),
-                        timestamp: PrimitiveDateTime::now(),
+                        timestamp: NaiveDateTime::from_timestamp(61, 0),
                         created_at: None,
                     }))
                 } else {
