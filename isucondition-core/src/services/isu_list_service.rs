@@ -8,12 +8,12 @@ use crate::repos::Result;
 
 pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 
-pub struct IsuListService<R: RepositoryManager> {
-    repo: R,
+pub struct IsuListService<'r, R: RepositoryManager> {
+    repo: &'r R,
 }
 
-impl<R: RepositoryManager> IsuListService<R> {
-    pub fn new(repo: R) -> Self {
+impl<'r, R: RepositoryManager> IsuListService<'r, R> {
+    pub fn new(repo: &'r R) -> Self {
         Self { repo }
     }
 
@@ -59,7 +59,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Ok(vec![]));
 
-        let service = IsuListService::new(repo);
+        let service = IsuListService::new(&repo);
         let result = service.run(UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 0);
 
@@ -74,7 +74,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Err(repos::Error::TestError()));
 
-        let service = IsuListService::new(repo);
+        let service = IsuListService::new(&repo);
         let result = service.run(UserID::new("test".to_string())).await;
         assert!(result.is_err());
 

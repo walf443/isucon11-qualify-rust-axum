@@ -14,7 +14,7 @@ use tracing::error;
 pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let service = IsuListService::new(repo.as_ref().clone());
+    let service = IsuListService::new(repo.as_ref());
     let list = service
         .run(UserID::new("1".to_string()))
         .await
