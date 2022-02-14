@@ -5,6 +5,12 @@ use std::fmt::{Display, Formatter};
 #[derive(Debug, sqlx::Type, PartialEq, Clone)]
 pub struct IsuConditionID(String);
 
+impl IsuConditionID {
+    pub fn new(str: String) -> Self {
+        Self { 0: str }
+    }
+}
+
 impl Display for IsuConditionID {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)

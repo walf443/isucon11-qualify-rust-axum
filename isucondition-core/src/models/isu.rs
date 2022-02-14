@@ -4,6 +4,12 @@ use std::fmt::{Display, Formatter};
 #[derive(Debug, sqlx::Type)]
 pub struct IsuID(i64);
 
+impl IsuID {
+    pub fn new(num: i64) -> Self {
+        Self(num)
+    }
+}
+
 impl Display for IsuID {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
