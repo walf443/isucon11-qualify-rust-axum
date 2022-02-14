@@ -3,8 +3,6 @@ use axum::extract::{Extension, Path};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-use isucondition_core::models::isu::Isu;
-use isucondition_core::models::isu_condition::IsuCondition;
 use isucondition_core::models::user::UserID;
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::services::isu_list_service::IsuListService;

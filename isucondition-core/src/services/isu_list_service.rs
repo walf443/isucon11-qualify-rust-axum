@@ -42,17 +42,14 @@ impl<'r, R: RepositoryManager> IsuListService<'r, R> {
 
 #[cfg(test)]
 mod tests {
-    use crate::database::get_db_connection_for_test;
     use crate::models::isu::{Isu, IsuID, IsuUUID};
     use crate::models::isu_condition::{IsuCondition, IsuConditionID};
     use crate::models::user::UserID;
     use crate::repos;
     use crate::repos::repository_manager::tests::MockRepositoryManager;
-    use crate::repos::repository_manager::RepositoryManager;
     use crate::repos::Result;
     use crate::services::isu_list_service::IsuListService;
     use sqlx::types::time::PrimitiveDateTime;
-    use std::borrow::BorrowMut;
 
     #[tokio::test]
     async fn test_isu_list_service_with_empty_list() -> Result<()> {
