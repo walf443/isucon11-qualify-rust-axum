@@ -1,7 +1,6 @@
 use crate::database::DBConnectionPool;
 use crate::models::isu::{Isu, IsuID, IsuUUID};
 use crate::models::user::UserID;
-use crate::repos::Error::SqlError;
 use crate::repos::{Error, Result};
 use async_trait::async_trait;
 
@@ -140,6 +139,39 @@ mod tests {
             .await?;
 
         assert!(result.is_none());
+
+        cleaner.clean().await?;
+
+        Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_find_image_by_uuid_and_user_id_with_result() -> Result<()> {
+        let pool = get_db_connection_for_test().await;
+
+        let mut cleaner = Cleaner::new(pool.clone());
+        cleaner.prepare_table("isu").await?;
+
+        sqlx::query!(
+            "INSERT INTO isu (jia_user_id, jia_isu_uuid, name, image) VALUES  (?,?,?,?)",
+            "1".to_string(),
+            "test".to_string(),
+            "test1".to_string(),
+            "a".to_string(),
+        )
+        .execute(&pool)
+        .await?;
+
+        let repo = IsuRepositoryImpl { pool: pool };
+        let result = repo
+            .find_image_by_uuid_and_user_id(
+                &IsuUUID::new("test".to_string()),
+                &UserID::new("1".to_string()),
+            )
+            .await?;
+
+        assert!(result.is_some());
+        assert_eq!(result.unwrap(), vec![b'a']);
 
         cleaner.clean().await?;
 
