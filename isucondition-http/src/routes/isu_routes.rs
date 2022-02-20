@@ -1,6 +1,6 @@
 use crate::responses::error::Error;
 use crate::responses::error::Error::IsuNotFoundError;
-use crate::responses::isu_response::IsuResponse;
+use crate::responses::isu_response::{IsuResponse, IsuWithConditionResponse};
 use axum::extract::{Extension, Path};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -11,7 +11,6 @@ use isucondition_core::repos::isu_repository::IsuRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::services::isu_list_service::IsuListService;
 use std::sync::Arc;
-use tracing::error;
 
 pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
@@ -19,7 +18,7 @@ pub async fn get_isu_list<Repo: RepositoryManager>(
     let service = IsuListService::new(repo.as_ref());
     let list = service.run(UserID::new("1".to_string())).await?;
 
-    let list: Vec<IsuResponse> = list.into_iter().map(|isu| isu.into()).collect();
+    let list: Vec<IsuWithConditionResponse> = list.into_iter().map(|isu| isu.into()).collect();
 
     Ok((StatusCode::OK, Json(list)))
 }
@@ -28,8 +27,24 @@ pub async fn post_isu() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
 }
 
-pub async fn get_isu_id(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!["Hello, world"]))
+pub async fn get_isu_id<Repo: RepositoryManager>(
+    Path(jia_isu_uuid): Path<String>,
+    Extension(repo): Extension<Arc<Repo>>,
+) -> Result<impl IntoResponse, Error> {
+    let uuid = IsuUUID::parse(jia_isu_uuid)?;
+
+    let isu = repo
+        .isu_repository()
+        .find_by_uuid_and_user_id(&uuid, &UserID::new("1".to_string()))
+        .await?;
+
+    match isu {
+        Some(isu) => {
+            let res: IsuResponse = isu.into();
+            Ok((StatusCode::OK, Json(res)))
+        }
+        None => Err(IsuNotFoundError()),
+    }
 }
 
 pub async fn get_isu_icon<Repo: RepositoryManager>(

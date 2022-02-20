@@ -1,6 +1,7 @@
 use crate::database::DBConnectionPool;
 use crate::models::isu::{Isu, IsuID, IsuUUID};
 use crate::models::user::UserID;
+use crate::repos;
 use crate::repos::{Error, Result};
 use async_trait::async_trait;
 
@@ -13,6 +14,11 @@ pub trait IsuRepository {
         jia_uuid: &IsuUUID,
         jia_user_id: &UserID,
     ) -> Result<Option<Vec<u8>>>;
+    async fn find_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<Option<Isu>>;
 }
 
 #[derive(Clone)]
@@ -58,6 +64,35 @@ impl IsuRepository for IsuRepositoryImpl {
             Err(err) => match err {
                 sqlx::error::Error::RowNotFound => Ok(None),
                 _ => Err(Error::SqlError(err)),
+            },
+        }
+    }
+
+    async fn find_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<Option<Isu>> {
+        let result = sqlx::query_as!(
+            Isu,
+            r##"SELECT
+                id as `id:IsuID`,
+                jia_user_id as `jia_user_id:UserID`,
+                jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
+                name,
+                `character`
+            FROM isu WHERE jia_isu_uuid = ? AND jia_user_id = ?"##,
+            jia_uuid.to_string(),
+            jia_user_id.to_string()
+        )
+        .fetch_one(&self.pool)
+        .await;
+
+        match result {
+            Ok(record) => Ok(Some(record)),
+            Err(err) => match err {
+                sqlx::error::Error::RowNotFound => Ok(None),
+                _ => Err(repos::Error::SqlError(err)),
             },
         }
     }

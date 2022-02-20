@@ -32,7 +32,7 @@ pub fn run<R: 'static + RepositoryManager>(
         .route("/api/signout", post(post_signout))
         .route("/api/user/me", get(get_me::<Repo>))
         .route("/api/isu", get(get_isu_list::<Repo>).post(post_isu))
-        .route("/api/isu/:jia_isu_uuid", get(get_isu_id))
+        .route("/api/isu/:jia_isu_uuid", get(get_isu_id::<Repo>))
         .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon::<Repo>))
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
         .route(
