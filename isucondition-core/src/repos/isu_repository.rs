@@ -8,6 +8,11 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait IsuRepository {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;
+    async fn find_image_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<Option<Vec<u8>>>;
 }
 
 #[derive(Clone)]
@@ -33,6 +38,22 @@ impl IsuRepository for IsuRepositoryImpl {
         .await?;
 
         Ok(chairs)
+    }
+
+    async fn find_image_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<Option<Vec<u8>>> {
+        let record = sqlx::query!(
+            "SELECT image FROM isu WHERE jia_isu_uuid = ? AND jia_user_id = ?",
+            jia_uuid.to_string(),
+            jia_user_id.to_string()
+        )
+        .fetch_one(&self.pool)
+        .await?;
+
+        Ok(record.image)
     }
 }
 

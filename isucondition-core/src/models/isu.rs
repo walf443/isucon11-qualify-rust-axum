@@ -1,4 +1,5 @@
 use crate::models::user::UserID;
+use crate::models::Result;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, sqlx::Type)]
@@ -22,6 +23,10 @@ pub struct IsuUUID(String);
 impl IsuUUID {
     pub fn new(str: String) -> Self {
         Self(str)
+    }
+
+    pub fn parse(str: String) -> Result<Self> {
+        Ok(Self(str))
     }
 
     pub fn to_string(&self) -> String {
