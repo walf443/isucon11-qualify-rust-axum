@@ -2,15 +2,12 @@ pub mod authorization_routes;
 pub mod initialize_routes;
 pub mod isu_condition_routes;
 pub mod isu_routes;
+pub mod trend_routes;
 pub mod user_routes;
 
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
-
-pub async fn get_trend() -> impl IntoResponse {
-    (StatusCode::OK, Json(vec!["Hello, world"]))
-}
 
 pub async fn get_index() -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
