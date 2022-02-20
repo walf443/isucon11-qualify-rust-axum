@@ -15,15 +15,9 @@ use tracing::error;
 
 pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
-) -> Result<impl IntoResponse, (StatusCode, String)> {
+) -> Result<impl IntoResponse, Error> {
     let service = IsuListService::new(repo.as_ref());
-    let list = service
-        .run(UserID::new("1".to_string()))
-        .await
-        .map_err(|err| {
-            error!("error: {:?}", err);
-            (StatusCode::INTERNAL_SERVER_ERROR, "error".to_string())
-        })?;
+    let list = service.run(UserID::new("1".to_string())).await?;
 
     let list: Vec<IsuResponse> = list.into_iter().map(|isu| isu.into()).collect();
 
