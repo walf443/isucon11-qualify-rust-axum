@@ -19,6 +19,8 @@ pub trait IsuRepository {
         jia_uuid: &IsuUUID,
         jia_user_id: &UserID,
     ) -> Result<Option<Isu>>;
+    async fn find_character_group_by(&self) -> Result<Vec<Option<String>>>;
+    async fn find_all_by_character(&self, character: &String) -> Result<Vec<Isu>>;
 }
 
 #[derive(Clone)]
@@ -95,6 +97,33 @@ impl IsuRepository for IsuRepositoryImpl {
                 _ => Err(repos::Error::SqlError(err)),
             },
         }
+    }
+
+    async fn find_character_group_by(&self) -> Result<Vec<Option<String>>> {
+        let result = sqlx::query!("SELECT `character` FROM isu GROUP BY `character`")
+            .fetch_all(&self.pool)
+            .await?;
+        let characters = result.into_iter().map(|record| record.character).collect();
+
+        Ok(characters)
+    }
+
+    async fn find_all_by_character(&self, character: &String) -> Result<Vec<Isu>> {
+        let result = sqlx::query_as!(
+            Isu,
+            r##"SELECT
+                id as `id:IsuID`,
+                jia_user_id as `jia_user_id:UserID`,
+                jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
+                name,
+                `character`
+            FROM isu WHERE `character` = ?"##,
+            character,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
+        Ok(result)
     }
 }
 

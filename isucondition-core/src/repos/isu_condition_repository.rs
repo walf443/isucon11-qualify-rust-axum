@@ -9,6 +9,7 @@ use async_trait::async_trait;
 #[async_trait]
 pub trait IsuConditionRepository {
     async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>>;
+    async fn find_all_by_uuid(&self, jia_isu_uuid: &IsuUUID) -> Result<Vec<IsuCondition>>;
 }
 
 #[derive(Clone)]
@@ -36,6 +37,28 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
         )
         .fetch_optional(&self.pool)
         .await?;
+        Ok(result)
+    }
+
+    async fn find_all_by_uuid(&self, jia_isu_uuid: &IsuUUID) -> Result<Vec<IsuCondition>> {
+        let result = sqlx::query_as!(
+            IsuCondition,
+            r##"SELECT
+                    id AS `id:IsuConditionID`,
+                    jia_isu_uuid AS `jia_isu_uuid:IsuUUID`,
+                    is_sitting as `is_sitting: bool`,
+                    `condition`,
+                    message,
+                    created_at,
+                    `timestamp`
+                FROM `isu_condition`
+                WHERE `jia_isu_uuid` = ?
+                ORDER BY `timestamp` DESC"##,
+            jia_isu_uuid.to_string(),
+        )
+        .fetch_all(&self.pool)
+        .await?;
+
         Ok(result)
     }
 }

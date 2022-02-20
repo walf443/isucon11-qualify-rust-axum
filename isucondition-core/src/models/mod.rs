@@ -1,5 +1,6 @@
 pub mod isu;
 pub mod isu_condition;
+pub mod trend;
 pub mod user;
 
 use thiserror::Error;

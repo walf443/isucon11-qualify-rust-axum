@@ -9,6 +9,10 @@ impl IsuID {
     pub fn new(num: i64) -> Self {
         Self(num)
     }
+
+    pub fn to_i64(&self) -> i64 {
+        self.0
+    }
 }
 
 impl Display for IsuID {

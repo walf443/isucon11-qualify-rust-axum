@@ -27,3 +27,21 @@ pub struct IsuCondition {
     pub timestamp: NaiveDateTime,
     pub created_at: Option<NaiveDateTime>,
 }
+pub enum ConditionLevel {
+    Info,
+    Warning,
+    Critical,
+    Unknown,
+}
+
+impl IsuCondition {
+    pub fn condition_level(&self) -> ConditionLevel {
+        let warn_count = self.condition.matches("=true").count();
+        match warn_count {
+            0 => ConditionLevel::Info,
+            1 | 2 => ConditionLevel::Warning,
+            3 => ConditionLevel::Critical,
+            _ => ConditionLevel::Unknown,
+        }
+    }
+}
