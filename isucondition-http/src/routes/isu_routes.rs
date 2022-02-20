@@ -1,3 +1,5 @@
+use crate::responses::error::Error;
+use crate::responses::error::Error::IsuNotFoundError;
 use crate::responses::isu_response::IsuResponse;
 use axum::extract::{Extension, Path};
 use axum::http::StatusCode;
@@ -39,24 +41,17 @@ pub async fn get_isu_id(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse 
 pub async fn get_isu_icon<Repo: RepositoryManager>(
     Path(jia_isu_uuid): Path<String>,
     Extension(repo): Extension<Arc<Repo>>,
-) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let uuid = IsuUUID::parse(jia_isu_uuid).map_err(|err| {
-        error!("error: {:?}", err);
-        (StatusCode::BAD_REQUEST, "invalid isu_uuid".to_string())
-    })?;
+) -> Result<impl IntoResponse, Error> {
+    let uuid = IsuUUID::parse(jia_isu_uuid)?;
 
     let image = repo
         .isu_repository()
         .find_image_by_uuid_and_user_id(&uuid, &UserID::new("1".to_string()))
-        .await
-        .map_err(|err| {
-            error!("error: {:?}", err);
-            (StatusCode::INTERNAL_SERVER_ERROR, "error".to_string())
-        })?;
+        .await?;
 
     match image {
         Some(image) => Ok(image),
-        None => Err((StatusCode::NOT_FOUND, "not found: isu".to_string())),
+        None => Err(IsuNotFoundError()),
     }
 }
 
