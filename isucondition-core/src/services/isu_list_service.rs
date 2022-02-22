@@ -52,7 +52,7 @@ mod tests {
     use chrono::NaiveDateTime;
 
     #[tokio::test]
-    async fn test_isu_list_service_with_empty_list() -> Result<()> {
+    async fn with_empty_list() -> Result<()> {
         let mut repo = MockRepositoryManager::new();
 
         repo.isu_repository
@@ -67,7 +67,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_isu_list_service_with_got_error_when_getting_list() -> Result<()> {
+    async fn with_got_error_when_getting_list() -> Result<()> {
         let mut repo = MockRepositoryManager::new();
 
         repo.isu_repository
@@ -82,7 +82,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_isu_list_service_with_items() -> Result<()> {
+    async fn with_items() -> Result<()> {
         let mut repo = MockRepositoryManager::new();
 
         repo.isu_repository
