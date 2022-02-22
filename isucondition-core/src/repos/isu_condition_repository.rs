@@ -65,42 +65,44 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
 
 #[cfg(test)]
 mod test {
-    use crate::database::get_db_connection_for_test;
-    use crate::models::isu::IsuUUID;
-    use crate::models::isu_condition::IsuCondition;
-    use crate::repos::isu_condition_repository::{
-        IsuConditionRepository, IsuConditionRepositoryImpl,
-    };
-    use crate::repos::Result;
-    use crate::test::Cleaner;
 
-    #[tokio::test]
-    async fn test_find_last_by_isu_id_with_empty() -> Result<()> {
-        let pool = get_db_connection_for_test().await;
+    mod find_last_by_isu_id {
+        use crate::database::get_db_connection_for_test;
+        use crate::models::isu::IsuUUID;
+        use crate::models::isu_condition::IsuCondition;
+        use crate::repos::isu_condition_repository::{
+            IsuConditionRepository, IsuConditionRepositoryImpl,
+        };
+        use crate::repos::Result;
+        use crate::test::Cleaner;
 
-        let mut cleaner = Cleaner::new(pool.clone());
-        cleaner.prepare_table("isu_condition").await?;
+        #[tokio::test]
+        async fn with_empty() -> Result<()> {
+            let pool = get_db_connection_for_test().await;
 
-        let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo
-            .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
-            .await?;
+            let mut cleaner = Cleaner::new(pool.clone());
+            cleaner.prepare_table("isu_condition").await?;
 
-        assert!(condition.is_none());
+            let repo = IsuConditionRepositoryImpl { pool: pool };
+            let condition = repo
+                .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
+                .await?;
 
-        cleaner.clean().await?;
+            assert!(condition.is_none());
 
-        Ok(())
-    }
+            cleaner.clean().await?;
 
-    #[tokio::test]
-    async fn test_find_last_by_isu_id_with_result() -> Result<()> {
-        let pool = get_db_connection_for_test().await;
+            Ok(())
+        }
 
-        let mut cleaner = Cleaner::new(pool.clone());
-        cleaner.prepare_table("isu_condition").await?;
+        #[tokio::test]
+        async fn with_result() -> Result<()> {
+            let pool = get_db_connection_for_test().await;
 
-        sqlx::query!(
+            let mut cleaner = Cleaner::new(pool.clone());
+            cleaner.prepare_table("isu_condition").await?;
+
+            sqlx::query!(
             "INSERT INTO isu_condition (jia_isu_uuid, timestamp, is_sitting, `condition`, message) VALUES  (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)",
             "1".to_string(),
             "2022-02-11T10:00:00".to_string(),
@@ -114,28 +116,29 @@ mod test {
             "test2"
         ).execute(&pool).await?;
 
-        let repo = IsuConditionRepositoryImpl { pool: pool };
-        let condition = repo
-            .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
-            .await?;
+            let repo = IsuConditionRepositoryImpl { pool: pool };
+            let condition = repo
+                .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
+                .await?;
 
-        assert!(condition.is_some());
-        let condition = condition.unwrap();
-        assert_eq!(
-            IsuCondition {
-                id: condition.id.clone(),
-                timestamp: condition.timestamp.clone(),
-                created_at: condition.created_at.clone(),
-                jia_isu_uuid: IsuUUID::new("1".to_string()),
-                is_sitting: true,
-                condition: "".to_string(),
-                message: "test".to_string(),
-            },
-            condition
-        );
+            assert!(condition.is_some());
+            let condition = condition.unwrap();
+            assert_eq!(
+                IsuCondition {
+                    id: condition.id.clone(),
+                    timestamp: condition.timestamp.clone(),
+                    created_at: condition.created_at.clone(),
+                    jia_isu_uuid: IsuUUID::new("1".to_string()),
+                    is_sitting: true,
+                    condition: "".to_string(),
+                    message: "test".to_string(),
+                },
+                condition
+            );
 
-        cleaner.clean().await?;
+            cleaner.clean().await?;
 
-        Ok(())
+            Ok(())
+        }
     }
 }
