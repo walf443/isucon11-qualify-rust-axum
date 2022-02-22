@@ -63,3 +63,9 @@ impl<'r, R: RepositoryManager> TrendService<'r, R> {
         })
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #[tokio::test]
+    async fn test_run() {}
+}
