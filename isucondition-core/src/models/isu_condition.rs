@@ -34,6 +34,17 @@ pub enum ConditionLevel {
     Unknown,
 }
 
+impl ConditionLevel {
+    pub fn to_string(&self) -> String {
+        match self {
+            ConditionLevel::Info => "info".to_string(),
+            ConditionLevel::Warning => "warning".to_string(),
+            ConditionLevel::Critical => "critical".to_string(),
+            ConditionLevel::Unknown => panic!("invalid level unknown"),
+        }
+    }
+}
+
 impl IsuCondition {
     pub fn condition_level(&self) -> ConditionLevel {
         let warn_count = self.condition.matches("=true").count();

@@ -1,3 +1,4 @@
+use crate::responses::isu_condition_response::IsuConditionResponse;
 use isucondition_core::models::isu::Isu;
 use isucondition_core::services::isu_list_service::IsuWithCondition;
 use serde::Serialize;
@@ -30,29 +31,10 @@ pub struct IsuWithConditionResponse {
     latest_isu_condition: Option<IsuConditionResponse>,
 }
 
-#[derive(Serialize)]
-struct IsuConditionResponse {
-    jia_isu_uuid: String,
-    isu_name: String,
-    timestamp: i64,
-    is_sitting: bool,
-    condition: String,
-    condition_level: &'static str,
-    message: String,
-}
-
 impl From<IsuWithCondition> for IsuWithConditionResponse {
     fn from((isu, latest_isu_condition): IsuWithCondition) -> Self {
-        let condition = match latest_isu_condition {
-            Some(condition) => Some(IsuConditionResponse {
-                jia_isu_uuid: condition.jia_isu_uuid.to_string(),
-                isu_name: isu.name.clone(),
-                timestamp: condition.timestamp.timestamp(),
-                is_sitting: condition.is_sitting,
-                condition: condition.condition,
-                condition_level: "",
-                message: condition.message,
-            }),
+        let condition: Option<IsuConditionResponse> = match latest_isu_condition {
+            Some(condition) => Some((isu.clone(), condition).into()),
             None => None,
         };
         Self {

@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, sqlx::Type, Clone)]
 pub struct UserID(String);
 
 impl UserID {

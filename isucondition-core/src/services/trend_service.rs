@@ -32,7 +32,7 @@ impl<'r, R: RepositoryManager> TrendService<'r, R> {
                 .find_last_by_isu_id(&isu.jia_isu_uuid)
                 .await?;
 
-            let result = match condition {
+            match condition {
                 Some(last_isu_condition) => {
                     let level = last_isu_condition.condition_level();
 

@@ -2,7 +2,7 @@ use crate::models::user::UserID;
 use crate::models::Result;
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug, sqlx::Type)]
+#[derive(Debug, sqlx::Type, Clone)]
 pub struct IsuID(i64);
 
 impl IsuID {
@@ -21,7 +21,7 @@ impl Display for IsuID {
     }
 }
 
-#[derive(Debug, sqlx::Type, PartialEq)]
+#[derive(Debug, sqlx::Type, PartialEq, Clone)]
 pub struct IsuUUID(String);
 
 impl IsuUUID {
@@ -44,7 +44,7 @@ impl Display for IsuUUID {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Isu {
     pub id: IsuID,
     pub jia_user_id: UserID,
