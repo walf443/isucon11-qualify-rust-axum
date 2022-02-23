@@ -12,9 +12,7 @@ async fn with_empty() -> Result<()> {
     cleaner.prepare_table("isu").await?;
 
     let repo = IsuRepositoryImpl { pool: pool };
-    let result = repo
-        .find_all_by_character(&"test".to_string())
-        .await?;
+    let result = repo.find_all_by_character(&"test".to_string()).await?;
     assert_eq!(result.len(), 0);
 
     cleaner.clean().await?;
@@ -47,9 +45,7 @@ async fn with_result() -> Result<()> {
     .await?;
 
     let repo = IsuRepositoryImpl { pool: pool };
-    let result = repo
-        .find_all_by_character(&"chara1".to_string())
-        .await?;
+    let result = repo.find_all_by_character(&"chara1".to_string()).await?;
     assert_eq!(result.len(), 2);
     assert_eq!(result[0].character, Some("chara1".to_string()));
 

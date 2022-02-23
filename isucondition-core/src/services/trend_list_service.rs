@@ -31,3 +31,26 @@ impl<'r, R: RepositoryManager> TrendListService<'r, R> {
         Ok(trends)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::repos;
+    use crate::repos::repository_manager::tests::MockRepositoryManager;
+    use crate::services::trend_list_service::TrendListService;
+    use repos::Result;
+
+    #[tokio::test]
+    async fn with_empty_character() -> Result<()> {
+        let mut repo = MockRepositoryManager::new();
+        repo.isu_repository
+            .expect_find_character_group_by()
+            .returning(|| Ok(Vec::new()));
+
+        let service = TrendListService::new(&repo);
+        let result = service.run().await?;
+
+        assert_eq!(result.len(), 0);
+
+        Ok(())
+    }
+}
