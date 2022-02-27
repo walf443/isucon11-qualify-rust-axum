@@ -38,7 +38,7 @@ pub fn run<R: 'static + RepositoryManager>(
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))
         .route(
             "/api/isu/condition/:jia_isu_uuid",
-            get(get_isu_conditions).post(post_isu_condition),
+            get(get_isu_conditions::<Repo>).post(post_isu_condition),
         )
         .route("/api/trend", get(get_trend::<Repo>))
         .route("/api/auth", post(post_authentication::<Repo>))
