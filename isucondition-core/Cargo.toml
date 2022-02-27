@@ -6,15 +6,15 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-sqlx = { version = "0.5.10", features = ["mysql", "chrono", "runtime-tokio-native-tls"] }
+sqlx = { version = "0.5", features = ["mysql", "chrono", "runtime-tokio-native-tls"] }
 chrono = "0.4.19"
-serde_json = "1.0.78"
-serde = { version = "1.0.136", features = ["derive"] }
-anyhow = "1.0.53"
-async-trait = "0.1.52"
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
+anyhow = "1"
+async-trait = "0.1"
 tokio = { version = "1", features = ["full"] }
-tracing = "0.1.30"
-thiserror = "1.0.30"
+tracing = "0.1"
+thiserror = "1.0"
 
 [dev-dependencies]
-mockall = "0.11.0"
+mockall = "0.11"

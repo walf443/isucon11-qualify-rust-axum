@@ -113,7 +113,7 @@ mod tests {
             .await
             .expect("Failed to request");
 
-        assert_eq!(StatusCode::BAD_REQUEST, res.status());
+        assert_eq!(StatusCode::UNSUPPORTED_MEDIA_TYPE, res.status());
 
         Ok(())
     }
