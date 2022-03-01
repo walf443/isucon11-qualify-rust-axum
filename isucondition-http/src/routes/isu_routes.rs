@@ -1,5 +1,6 @@
+use crate::requests::current_user_id::CurrentUserID;
 use crate::responses::error::Error;
-use crate::responses::error::Error::IsuNotFoundError;
+use crate::responses::error::Error::{IsuNotFoundError, UnauthorizedError};
 use crate::responses::isu_response::{IsuResponse, IsuWithConditionResponse};
 use axum::extract::{Extension, Path};
 use axum::http::StatusCode;
@@ -14,9 +15,14 @@ use std::sync::Arc;
 
 pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
+    current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
+    if current_user_id.is_none() {
+        return Err(UnauthorizedError());
+    }
+    let current_user_id = current_user_id.unwrap();
     let service = IsuListService::new(repo.as_ref());
-    let list = service.run(UserID::new("1".to_string())).await?;
+    let list = service.run(&current_user_id).await?;
 
     let list: Vec<IsuWithConditionResponse> = list.into_iter().map(|isu| isu.into()).collect();
 
@@ -30,12 +36,18 @@ pub async fn post_isu() -> impl IntoResponse {
 pub async fn get_isu_id<Repo: RepositoryManager>(
     Path(jia_isu_uuid): Path<String>,
     Extension(repo): Extension<Arc<Repo>>,
+    current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let uuid = IsuUUID::parse(jia_isu_uuid)?;
 
+    if current_user_id.is_none() {
+        return Err(UnauthorizedError());
+    }
+    let current_user_id = current_user_id.unwrap();
+
     let isu = repo
         .isu_repository()
-        .find_by_uuid_and_user_id(&uuid, &UserID::new("1".to_string()))
+        .find_by_uuid_and_user_id(&uuid, &current_user_id)
         .await?;
 
     match isu {
@@ -50,12 +62,17 @@ pub async fn get_isu_id<Repo: RepositoryManager>(
 pub async fn get_isu_icon<Repo: RepositoryManager>(
     Path(jia_isu_uuid): Path<String>,
     Extension(repo): Extension<Arc<Repo>>,
+    current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let uuid = IsuUUID::parse(jia_isu_uuid)?;
+    if current_user_id.is_none() {
+        return Err(UnauthorizedError());
+    }
+    let current_user_id = current_user_id.unwrap();
 
     let image = repo
         .isu_repository()
-        .find_image_by_uuid_and_user_id(&uuid, &UserID::new("1".to_string()))
+        .find_image_by_uuid_and_user_id(&uuid, &current_user_id)
         .await?;
 
     match image {

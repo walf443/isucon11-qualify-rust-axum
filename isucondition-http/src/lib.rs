@@ -1,3 +1,6 @@
+extern crate core;
+
+mod requests;
 mod responses;
 mod routes;
 

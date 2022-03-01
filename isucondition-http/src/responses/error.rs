@@ -1,4 +1,4 @@
-use crate::responses::error::Error::{IsuNotFoundError, ModelError};
+use crate::responses::error::Error::{IsuNotFoundError, ModelError, UnauthorizedError};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use isucondition_core::{models, repos};
@@ -14,6 +14,8 @@ pub enum Error {
     ModelError(#[from] models::Error),
     #[error("not found isu")]
     IsuNotFoundError(),
+    #[error("you are not signed in.")]
+    UnauthorizedError(),
 }
 
 impl IntoResponse for Error {
@@ -22,9 +24,10 @@ impl IntoResponse for Error {
 
         let code = match self {
             IsuNotFoundError() => StatusCode::NOT_FOUND,
+            UnauthorizedError() => StatusCode::UNAUTHORIZED,
             ModelError(_) => StatusCode::BAD_REQUEST,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         };
-        (code, code.to_string()).into_response()
+        (code, format!("{:?}", self)).into_response()
     }
 }

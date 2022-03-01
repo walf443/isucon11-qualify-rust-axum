@@ -17,11 +17,11 @@ impl<'r, R: RepositoryManager> IsuListService<'r, R> {
         Self { repo }
     }
 
-    pub async fn run(&self, jia_user_id: UserID) -> Result<Vec<IsuWithCondition>> {
+    pub async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>> {
         let chairs = self
             .repo
             .isu_repository()
-            .find_all_by_user_id(&jia_user_id)
+            .find_all_by_user_id(jia_user_id)
             .await?;
 
         let mut list: Vec<IsuWithCondition> = Vec::new();
@@ -60,7 +60,7 @@ mod tests {
             .returning(|_user_id| Ok(vec![]));
 
         let service = IsuListService::new(&repo);
-        let result = service.run(UserID::new("test".to_string())).await?;
+        let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 0);
 
         Ok(())
@@ -75,7 +75,7 @@ mod tests {
             .returning(|_user_id| Err(repos::Error::TestError()));
 
         let service = IsuListService::new(&repo);
-        let result = service.run(UserID::new("test".to_string())).await;
+        let result = service.run(&UserID::new("test".to_string())).await;
         assert!(result.is_err());
 
         Ok(())
@@ -125,7 +125,7 @@ mod tests {
             });
 
         let service = IsuListService::new(&repo);
-        let result = service.run(UserID::new("test".to_string())).await?;
+        let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 2);
 
         assert_eq!(result[0].1, None);
