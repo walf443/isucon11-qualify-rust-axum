@@ -17,10 +17,7 @@ pub async fn get_isu_list<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
     current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
-    if current_user_id.is_none() {
-        return Err(UnauthorizedError());
-    }
-    let current_user_id = current_user_id.unwrap();
+    let current_user_id = current_user_id.try_unwrap()?;
     let service = IsuListService::new(repo.as_ref());
     let list = service.run(&current_user_id).await?;
 
@@ -40,10 +37,7 @@ pub async fn get_isu_id<Repo: RepositoryManager>(
 ) -> Result<impl IntoResponse, Error> {
     let uuid = IsuUUID::parse(jia_isu_uuid)?;
 
-    if current_user_id.is_none() {
-        return Err(UnauthorizedError());
-    }
-    let current_user_id = current_user_id.unwrap();
+    let current_user_id = current_user_id.try_unwrap()?;
 
     let isu = repo
         .isu_repository()
@@ -65,10 +59,7 @@ pub async fn get_isu_icon<Repo: RepositoryManager>(
     current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let uuid = IsuUUID::parse(jia_isu_uuid)?;
-    if current_user_id.is_none() {
-        return Err(UnauthorizedError());
-    }
-    let current_user_id = current_user_id.unwrap();
+    let current_user_id = current_user_id.try_unwrap()?;
 
     let image = repo
         .isu_repository()

@@ -1,3 +1,4 @@
+use crate::requests::current_user_id::CurrentUserID;
 use crate::responses::error::Error;
 use crate::responses::error::Error::IsuNotFoundError;
 use crate::responses::isu_condition_response::IsuConditionResponse;
@@ -25,14 +26,17 @@ pub async fn get_isu_conditions<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
     query: Query<GetIsuConditionQuery>,
     Path(jia_isu_uuid): Path<String>,
+    current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let uuid = IsuUUID::parse(jia_isu_uuid)?;
     let start_time = Some(NaiveDateTime::from_timestamp(0, 0));
     let end_time = NaiveDateTime::from_timestamp(0, 0);
 
+    let current_user_id = current_user_id.try_unwrap()?;
+
     let isu = repo
         .isu_repository()
-        .find_by_uuid_and_user_id(&uuid, &UserID::new("1".to_string()))
+        .find_by_uuid_and_user_id(&uuid, &current_user_id)
         .await?;
     if isu.is_none() {
         return Err(IsuNotFoundError());

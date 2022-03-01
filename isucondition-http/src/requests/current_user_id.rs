@@ -1,3 +1,5 @@
+use crate::responses;
+use crate::responses::error::Error::UnauthorizedError;
 use async_trait::async_trait;
 use axum::extract::{FromRequest, RequestParts, TypedHeader};
 use axum::headers::Cookie;
@@ -15,13 +17,10 @@ impl CurrentUserID {
             CurrentUserID::None => true,
         }
     }
-
-    pub fn unwrap(&self) -> UserID {
+    pub fn try_unwrap(&self) -> Result<UserID, responses::error::Error> {
         match self {
-            CurrentUserID::Some(user_id) => return user_id.clone(),
-            CurrentUserID::None => {
-                panic!("check before unwrap");
-            }
+            CurrentUserID::Some(user_id) => Ok(user_id.clone()),
+            CurrentUserID::None => Err(UnauthorizedError()),
         }
     }
 }
