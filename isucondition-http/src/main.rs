@@ -1,3 +1,4 @@
+use async_session::MemoryStore;
 use isucondition_core::database::{get_db_connection, DBConfig};
 use isucondition_core::repos::repository_manager::RepositoryManagerImpl;
 use isucondition_http::run;
@@ -14,7 +15,8 @@ async fn main() -> hyper::Result<()> {
     let pool = get_db_connection(dbconf).await;
     let repo_manager = Arc::new(RepositoryManagerImpl::new(pool));
 
-    let server = run(listener, repo_manager)?;
+    let store = MemoryStore::new();
+    let server = run(listener, repo_manager, store)?;
 
     server.await
 }

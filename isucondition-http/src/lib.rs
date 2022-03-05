@@ -11,8 +11,10 @@ use crate::routes::isu_condition_routes::{get_isu_conditions, post_isu_condition
 use crate::routes::isu_routes::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::routes::trend_routes::get_trend;
 use crate::routes::user_routes::get_me;
+use async_session::{MemoryStore, SessionStore};
+use axum::extract::Extension;
 use axum::routing::{get, post};
-use axum::{AddExtensionLayer, Router, Server};
+use axum::{Router, Server};
 use isucondition_core::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
 use std::future::Future;
 use std::net::TcpListener;
@@ -24,11 +26,12 @@ mod test_helper;
 
 type Repo = RepositoryManagerImpl;
 
-pub fn run<R: 'static + RepositoryManager>(
+pub fn run<R: 'static + RepositoryManager, Store: SessionStore>(
     listener: TcpListener,
     repo_manager: Arc<R>,
+    session_store: Store,
 ) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
-    let repo_manager_layer = AddExtensionLayer::new(repo_manager);
+    let repo_manager_layer = Extension(repo_manager);
 
     let app = Router::new()
         .route("/", get(get_index))
@@ -46,6 +49,7 @@ pub fn run<R: 'static + RepositoryManager>(
         .route("/api/trend", get(get_trend::<Repo>))
         .route("/api/auth", post(post_authentication::<Repo>))
         .layer(repo_manager_layer)
+        .layer(Extension(session_store))
         .layer(CookieManagerLayer::new());
 
     let server = Server::from_tcp(listener)?.serve(app.into_make_service());

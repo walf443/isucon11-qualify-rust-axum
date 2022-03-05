@@ -1,7 +1,8 @@
 use crate::responses;
 use crate::responses::error::Error::UnauthorizedError;
+use async_session::{MemoryStore, SessionStore};
 use async_trait::async_trait;
-use axum::extract::{FromRequest, RequestParts, TypedHeader};
+use axum::extract::{Extension, FromRequest, RequestParts, TypedHeader};
 use axum::headers::Cookie;
 use isucondition_core::models::user::UserID;
 
@@ -25,6 +26,9 @@ impl CurrentUserID {
     }
 }
 
+pub const SESSION_KEY: &str = "isucondition_rust";
+pub const SESSION_USER_ID: &str = "user_id";
+
 #[async_trait]
 impl<B> FromRequest<B> for CurrentUserID
 where
@@ -37,6 +41,29 @@ where
             .await
             .unwrap();
 
-        Ok(Self::Some(UserID::new("1".to_string())))
+        let session_cookie = cookie.as_ref().and_then(|cookie| cookie.get(SESSION_KEY));
+        if session_cookie.is_none() {
+            return Ok(Self::None);
+        }
+        let session_cookie = session_cookie.unwrap();
+
+        let Extension(store) = Extension::<MemoryStore>::from_request(req)
+            .await
+            .expect("session store not found");
+        let session = store.load_session(session_cookie.to_owned()).await;
+
+        return match session {
+            Err(_) => {
+                // TODO: it should be Err
+                Ok(Self::None)
+            }
+            Ok(session) => {
+                let current_user_id = session.unwrap().get::<String>(SESSION_USER_ID);
+                match current_user_id {
+                    None => Ok(CurrentUserID::None),
+                    Some(user_id) => Ok(Self::Some(UserID::new(user_id.clone()))),
+                }
+            }
+        };
     }
 }
