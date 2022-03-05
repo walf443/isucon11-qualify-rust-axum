@@ -8,6 +8,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use std::sync::Arc;
 use tracing::log;
+use isucondition_core::models::isu_association_config::IsuAssociationConfigForm;
 
 #[derive(Serialize, Deserialize)]
 pub struct PostInitializeRequest {
@@ -39,8 +40,12 @@ pub async fn post_initialize<Repo: RepositoryManager>(
         ));
     }
 
+    let form = IsuAssociationConfigForm::build("jia_service_url".to_string(), payload.jia_service_url.to_string()).map_err(|_|
+        (StatusCode::BAD_REQUEST, "invalid input".to_string())
+    )?;
+
     repo.isu_association_config_repository()
-        .insert("jia_service_url", &payload.jia_service_url)
+        .insert(&form)
         .await
         .map_err(|e| {
             log::error!("insert isu_association_config error");
