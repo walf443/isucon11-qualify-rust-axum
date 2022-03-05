@@ -66,3 +66,15 @@ pub async fn get_db_connection(config: DBConfig) -> DBConnectionPool {
 pub async fn get_db_connection_for_test() -> DBConnectionPool {
     get_db_connection(DBConfig::default_for_test()).await
 }
+
+pub struct RedisConfig {
+    pub url: String,
+}
+
+impl Default for RedisConfig {
+    fn default() -> Self {
+        Self {
+            url: "redis://localhost:6379".to_string(),
+        }
+    }
+}

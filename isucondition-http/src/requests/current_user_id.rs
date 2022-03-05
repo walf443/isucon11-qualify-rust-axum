@@ -1,6 +1,7 @@
 use crate::responses;
 use crate::responses::error::Error::UnauthorizedError;
-use async_session::{MemoryStore, SessionStore};
+use async_redis_session::RedisSessionStore;
+use async_session::SessionStore;
 use async_trait::async_trait;
 use axum::extract::{Extension, FromRequest, RequestParts, TypedHeader};
 use axum::headers::Cookie;
@@ -47,7 +48,7 @@ where
         }
         let session_cookie = session_cookie.unwrap();
 
-        let Extension(store) = Extension::<MemoryStore>::from_request(req)
+        let Extension(store) = Extension::<RedisSessionStore>::from_request(req)
             .await
             .expect("session store not found");
         let session = store.load_session(session_cookie.to_owned()).await;

@@ -11,7 +11,7 @@ use crate::routes::isu_condition_routes::{get_isu_conditions, post_isu_condition
 use crate::routes::isu_routes::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
 use crate::routes::trend_routes::get_trend;
 use crate::routes::user_routes::get_me;
-use async_session::{MemoryStore, SessionStore};
+use async_session::SessionStore;
 use axum::extract::Extension;
 use axum::routing::{get, post};
 use axum::{Router, Server};

@@ -1,5 +1,5 @@
-use async_session::MemoryStore;
-use isucondition_core::database::{get_db_connection, DBConfig};
+use async_redis_session::RedisSessionStore;
+use isucondition_core::database::{get_db_connection, DBConfig, RedisConfig};
 use isucondition_core::repos::repository_manager::RepositoryManagerImpl;
 use isucondition_http::run;
 use std::net::TcpListener;
@@ -15,7 +15,8 @@ async fn main() -> hyper::Result<()> {
     let pool = get_db_connection(dbconf).await;
     let repo_manager = Arc::new(RepositoryManagerImpl::new(pool));
 
-    let store = MemoryStore::new();
+    let redis_config = RedisConfig::default();
+    let store = RedisSessionStore::new(redis_config.url).unwrap();
     let server = run(listener, repo_manager, store)?;
 
     server.await
