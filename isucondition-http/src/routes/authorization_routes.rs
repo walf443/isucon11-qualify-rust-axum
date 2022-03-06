@@ -1,3 +1,7 @@
+use crate::requests::current_user_id::SESSION_USER_ID;
+use crate::requests::session::{SessionID, SESSION_KEY};
+use async_redis_session::RedisSessionStore;
+use async_session::{Session, SessionStore};
 use axum::extract::{Extension, TypedHeader};
 use axum::headers::authorization::Bearer;
 use axum::http::StatusCode;
@@ -24,6 +28,7 @@ struct Claims {
 pub async fn post_authentication<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
     TypedHeader(authorization): axum::extract::TypedHeader<headers::Authorization<Bearer>>,
+    Extension(store): Extension<RedisSessionStore>,
     cookies: Cookies,
 ) -> Result<impl IntoResponse, (StatusCode, String)> {
     let req_jwt = authorization.token();
@@ -53,13 +58,53 @@ pub async fn post_authentication<Repo: RepositoryManager>(
                 "user insert failed".to_string(),
             )
         })?;
-    cookies.add(Cookie::new("jia_user_id", jia_user_id));
+    let mut session = Session::new();
+    let result = session.insert(SESSION_USER_ID, jia_user_id.to_string());
+    if result.is_err() {
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error".to_string(),
+        ));
+    }
+    let session_id = session.id().to_string();
+    let result = store.store_session(session).await;
+    if result.is_err() {
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "internal server error".to_string(),
+        ));
+    }
+    cookies.add(Cookie::new(SESSION_KEY, session_id));
 
     Ok((StatusCode::OK, Json(vec!["Hello, world"])))
 }
 
-pub async fn post_signout(cookies: Cookies) -> impl IntoResponse {
+pub async fn post_signout(
+    cookies: Cookies,
+    Extension(store): Extension<RedisSessionStore>,
+    session_id: SessionID,
+) -> impl IntoResponse {
     cookies.remove(Cookie::new("jia_user_id", ""));
+    if session_id.is_none() {
+        return (StatusCode::OK, Json("OK"));
+    }
+    let session_id = session_id.unwrap();
+    let mut session = store.load_session(session_id).await;
+    match session {
+        Err(_) => {}
+        Ok(session) => {
+            if session.is_some() {
+                let result = store.destroy_session(session.unwrap()).await;
+                if result.is_err() {
+                    return (
+                        StatusCode::INTERNAL_SERVER_ERROR,
+                        Json("internal server error"),
+                    );
+                }
+            }
+            cookies.remove(Cookie::new(SESSION_KEY, ""));
+        }
+    }
 
     (StatusCode::OK, Json("OK"))
 }
