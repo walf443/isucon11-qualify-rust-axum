@@ -14,7 +14,7 @@ pub struct IsuListService<R: RepositoryManager> {
 }
 
 impl<R: RepositoryManager> IsuListService<R> {
-    fn new(repo: R) -> Self {
+    pub fn new(repo: R) -> Self {
         Self { repo }
     }
 
@@ -49,7 +49,7 @@ mod tests {
     use crate::repos;
     use crate::repos::repository_manager::tests::MockRepositoryManager;
     use crate::repos::Result;
-    use crate::services::isu_list_service::{IsuListService};
+    use crate::services::isu_list_service::IsuListService;
     use chrono::NaiveDateTime;
 
     #[tokio::test]
