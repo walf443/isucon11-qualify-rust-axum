@@ -6,15 +6,16 @@ use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
 use crate::repos::Result;
 use async_trait::async_trait;
+use std::sync::Arc;
 
 pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 
 pub struct IsuListService<R: RepositoryManager> {
-    repo: R,
+    repo: Arc<R>,
 }
 
 impl<R: RepositoryManager> IsuListService<R> {
-    pub fn new(repo: R) -> Self {
+    pub fn new(repo: Arc<R>) -> Self {
         Self { repo }
     }
 
@@ -51,6 +52,7 @@ mod tests {
     use crate::repos::Result;
     use crate::services::isu_list_service::IsuListService;
     use chrono::NaiveDateTime;
+    use std::sync::Arc;
 
     #[tokio::test]
     async fn with_empty_list() -> Result<()> {
@@ -60,7 +62,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Ok(vec![]));
 
-        let service = IsuListService::new(repo);
+        let service = IsuListService::new(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 0);
 
@@ -75,7 +77,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Err(repos::Error::TestError()));
 
-        let service = IsuListService::new(repo);
+        let service = IsuListService::new(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await;
         assert!(result.is_err());
 
@@ -125,7 +127,7 @@ mod tests {
                 }
             });
 
-        let service = IsuListService::new(repo);
+        let service = IsuListService::new(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 2);
 

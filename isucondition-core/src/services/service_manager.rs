@@ -2,6 +2,7 @@ use crate::models::isu::Isu;
 use crate::repos::repository_manager::tests::MockRepositoryManager;
 use crate::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
 use crate::services::isu_list_service::IsuListService;
+use std::sync::Arc;
 
 pub trait ServiceManager {
     type Repo: RepositoryManager;
@@ -10,12 +11,12 @@ pub trait ServiceManager {
 }
 
 pub struct ServiceManagerImpl<R: RepositoryManager> {
-    repo: R,
+    repo: Arc<R>,
 }
 
 impl<R: RepositoryManager> ServiceManagerImpl<R> {
-    pub fn new(repo: R) -> Self {
-        Self { repo: repo }
+    pub fn new(repo: Arc<R>) -> Self {
+        Self { repo }
     }
 }
 
