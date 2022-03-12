@@ -15,7 +15,7 @@ async fn no_sigined_in() -> () {
 }
 
 #[tokio::test]
-async fn sigined_in() -> Result<(), anyhow::Error> {
+async fn signed_in() -> Result<(), anyhow::Error> {
     let mut repo = MockRepositoryManager::new();
     let user_id = UserID::new("1".to_string());
     repo.isu_repository

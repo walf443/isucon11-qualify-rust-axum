@@ -21,7 +21,7 @@ pub async fn get_isu_list<Repo: RepositoryManager>(
     current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let current_user_id = current_user_id.try_unwrap()?;
-    let service = ServiceManagerImpl::new(repo.as_ref());
+    let service = ServiceManagerImpl::new(repo.as_ref().clone());
     let list = service.isu_list_service().run(&current_user_id).await?;
 
     let list: Vec<IsuWithConditionResponse> = list.into_iter().map(|isu| isu.into()).collect();
