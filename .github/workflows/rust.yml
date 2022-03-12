@@ -18,13 +18,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build
+    - name: Start services
       run: |
           docker-compose up -d
+
+          # wait for db ready
+          while ! docker-compose exec -T db mysql -e "SELECT 1" >/dev/null 2>&1
+          do
+            sleep 1
+          done
+
           MYSQL_DBNAME=isucondition_test ./sql/init.sh
+    - name: Build
+      run: |
           cargo build --verbose
     - name: Run tests
       run: |
-          docker-compose up -d
-          MYSQL_DBNAME=isucondition_test ./sql/init.sh
           cargo test --verbose
