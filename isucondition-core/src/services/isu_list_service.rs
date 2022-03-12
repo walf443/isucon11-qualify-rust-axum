@@ -10,7 +10,9 @@ use async_trait::async_trait;
 pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 
 #[async_trait]
-pub trait IsuListService {
+pub trait IsuListService<'r> {
+    type Repo: RepositoryManager;
+    fn new(repo: &'r Self::Repo) -> Self;
     async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>>;
 }
 
@@ -18,14 +20,14 @@ pub struct IsuListServiceImpl<'r, R: RepositoryManager> {
     repo: &'r R,
 }
 
-impl<'r, R: RepositoryManager> IsuListServiceImpl<'r, R> {
-    pub fn new(repo: &'r R) -> Self {
+#[async_trait]
+impl<'r, R: RepositoryManager> IsuListService<'r> for IsuListServiceImpl<'r, R> {
+    type Repo = R;
+
+    fn new(repo: &'r R) -> Self {
         Self { repo }
     }
-}
 
-#[async_trait]
-impl<'r, R: RepositoryManager> IsuListService for IsuListServiceImpl<'r, R> {
     async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>> {
         let chairs = self
             .repo

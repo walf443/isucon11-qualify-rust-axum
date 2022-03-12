@@ -1,20 +1,27 @@
-use crate::repos::repository_manager::RepositoryManagerImpl;
+use crate::repos::repository_manager::tests::MockRepositoryManager;
+use crate::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
 use crate::services::isu_list_service::{IsuListService, IsuListServiceImpl};
 
-pub trait ServiceManager {
-    type IsuListSrv: IsuListService;
+pub trait ServiceManager<'r> {
+    type IsuListSrv: IsuListService<'r>;
 
-    fn isu_list_service() -> Self::IsuListSrv;
+    fn isu_list_service(&self) -> Self::IsuListSrv;
 }
 
-pub struct ServiceManagerImpl<'r> {
-    repo: &'r RepositoryManagerImpl,
+pub struct ServiceManagerImpl<'r, R: RepositoryManager> {
+    repo: &'r R,
 }
 
-impl<'r> ServiceManager for ServiceManagerImpl<'r> {
-    type IsuListSrv = IsuListServiceImpl<'r, RepositoryManagerImpl>;
+impl<'r, R: RepositoryManager> ServiceManagerImpl<'r, R> {
+    pub fn new(repo: &'r R) -> Self {
+        Self { repo: repo }
+    }
+}
 
-    fn isu_list_service() -> Self::IsuListSrv {
-        todo!()
+impl<'r, R: RepositoryManager> ServiceManager<'r> for ServiceManagerImpl<'r, R> {
+    type IsuListSrv = IsuListServiceImpl<'r, R>;
+
+    fn isu_list_service(&self) -> Self::IsuListSrv {
+        Self::IsuListSrv::new(self.repo)
     }
 }
