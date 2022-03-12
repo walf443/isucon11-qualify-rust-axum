@@ -1,6 +1,4 @@
-use crate::models::isu::Isu;
-use crate::repos::repository_manager::tests::MockRepositoryManager;
-use crate::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
+use crate::repos::repository_manager::{RepositoryManager};
 use crate::services::isu_list_service::IsuListService;
 use std::sync::Arc;
 

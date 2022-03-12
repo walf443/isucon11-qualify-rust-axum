@@ -1,6 +1,5 @@
 use crate::get_isu_list;
 use crate::requests::current_user_id::CurrentUserID;
-use crate::responses::error::Error;
 use axum::extract::Extension;
 use isucondition_core::models::user::UserID;
 use isucondition_core::repos::repository_manager::tests::MockRepositoryManager;

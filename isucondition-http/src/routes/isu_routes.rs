@@ -9,7 +9,6 @@ use axum::Json;
 use isucondition_core::models::isu::IsuUUID;
 use isucondition_core::repos::isu_repository::IsuRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
-use isucondition_core::services::isu_list_service::IsuListService;
 use isucondition_core::services::service_manager::{ServiceManager, ServiceManagerImpl};
 use std::sync::Arc;
 
