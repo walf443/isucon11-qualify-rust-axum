@@ -7,9 +7,9 @@ use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
 use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
 
 pub trait RepositoryManager: Clone + std::marker::Send + std::marker::Sync {
-    type IsuRepo: IsuRepository;
+    type IsuRepo: IsuRepository + std::marker::Send + std::marker::Sync;
     type IsuAssociationConfigRepo: IsuAssociationConfigRepository;
-    type IsuConditionRepo: IsuConditionRepository;
+    type IsuConditionRepo: IsuConditionRepository + std::marker::Send + std::marker::Sync;
     type UserRepo: UserRepository;
 
     fn isu_repository(&self) -> &Self::IsuRepo;

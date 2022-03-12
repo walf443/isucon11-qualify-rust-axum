@@ -5,19 +5,28 @@ use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
 use crate::repos::Result;
+use async_trait::async_trait;
 
 pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 
-pub struct IsuListService<'r, R: RepositoryManager> {
+#[async_trait]
+pub trait IsuListService {
+    async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>>;
+}
+
+pub struct IsuListServiceImpl<'r, R: RepositoryManager> {
     repo: &'r R,
 }
 
-impl<'r, R: RepositoryManager> IsuListService<'r, R> {
+impl<'r, R: RepositoryManager> IsuListServiceImpl<'r, R> {
     pub fn new(repo: &'r R) -> Self {
         Self { repo }
     }
+}
 
-    pub async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>> {
+#[async_trait]
+impl<'r, R: RepositoryManager> IsuListService for IsuListServiceImpl<'r, R> {
+    async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>> {
         let chairs = self
             .repo
             .isu_repository()
@@ -48,7 +57,7 @@ mod tests {
     use crate::repos;
     use crate::repos::repository_manager::tests::MockRepositoryManager;
     use crate::repos::Result;
-    use crate::services::isu_list_service::IsuListService;
+    use crate::services::isu_list_service::{IsuListService, IsuListServiceImpl};
     use chrono::NaiveDateTime;
 
     #[tokio::test]
@@ -59,7 +68,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Ok(vec![]));
 
-        let service = IsuListService::new(&repo);
+        let service = IsuListServiceImpl::new(&repo);
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 0);
 
@@ -74,7 +83,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Err(repos::Error::TestError()));
 
-        let service = IsuListService::new(&repo);
+        let service = IsuListServiceImpl::new(&repo);
         let result = service.run(&UserID::new("test".to_string())).await;
         assert!(result.is_err());
 
@@ -124,7 +133,7 @@ mod tests {
                 }
             });
 
-        let service = IsuListService::new(&repo);
+        let service = IsuListServiceImpl::new(&repo);
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 2);
 
