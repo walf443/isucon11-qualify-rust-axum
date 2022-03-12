@@ -29,6 +29,7 @@ jobs:
           done
 
           MYSQL_DBNAME=isucondition_test ./sql/init.sh
+    - uses: ./.github/actions/cache_cargo
     - name: Build
       run: |
           cargo build --verbose
