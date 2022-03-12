@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  db:
+    volumes:
+      - ./sql/init.d:/docker-entrypoint-initdb.d
+      - ../isucon11-qualify-rust-axum-docker/db/data:/var/lib/mysql
