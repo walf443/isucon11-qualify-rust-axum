@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 pub mod database;
 pub mod models;
 pub mod repos;
