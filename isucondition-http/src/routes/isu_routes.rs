@@ -1,13 +1,12 @@
 use crate::requests::current_user_id::CurrentUserID;
 use crate::responses::error::Error;
-use crate::responses::error::Error::{IsuNotFoundError, UnauthorizedError};
+use crate::responses::error::Error::IsuNotFoundError;
 use crate::responses::isu_response::{IsuResponse, IsuWithConditionResponse};
 use axum::extract::{Extension, Path};
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::Json;
 use isucondition_core::models::isu::IsuUUID;
-use isucondition_core::models::user::UserID;
 use isucondition_core::repos::isu_repository::IsuRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
 use isucondition_core::services::isu_list_service::IsuListService;

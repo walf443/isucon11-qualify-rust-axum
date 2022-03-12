@@ -1,7 +1,5 @@
-use async_redis_session::RedisSessionStore;
-use async_session::SessionStore;
 use async_trait::async_trait;
-use axum::extract::{Extension, FromRequest, RequestParts, TypedHeader};
+use axum::extract::{FromRequest, RequestParts, TypedHeader};
 use axum::headers::Cookie;
 
 pub enum SessionID {

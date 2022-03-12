@@ -4,8 +4,7 @@ use crate::responses::error::Error::UnauthorizedError;
 use async_redis_session::RedisSessionStore;
 use async_session::SessionStore;
 use async_trait::async_trait;
-use axum::extract::{Extension, FromRequest, RequestParts, TypedHeader};
-use axum::headers::Cookie;
+use axum::extract::{Extension, FromRequest, RequestParts};
 use isucondition_core::models::user::UserID;
 
 pub enum CurrentUserID {

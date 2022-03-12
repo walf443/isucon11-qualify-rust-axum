@@ -89,7 +89,7 @@ pub async fn post_signout(
         return (StatusCode::OK, Json("OK"));
     }
     let session_id = session_id.unwrap();
-    let mut session = store.load_session(session_id).await;
+    let session = store.load_session(session_id).await;
     match session {
         Err(_) => {}
         Ok(session) => {

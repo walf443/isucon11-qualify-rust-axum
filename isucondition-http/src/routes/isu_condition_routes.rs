@@ -8,7 +8,6 @@ use axum::response::IntoResponse;
 use axum::Json;
 use chrono::NaiveDateTime;
 use isucondition_core::models::isu::IsuUUID;
-use isucondition_core::models::user::UserID;
 use isucondition_core::repos::isu_condition_repository::IsuConditionRepository;
 use isucondition_core::repos::isu_repository::IsuRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
@@ -24,7 +23,7 @@ pub struct GetIsuConditionQuery {
 
 pub async fn get_isu_conditions<Repo: RepositoryManager>(
     Extension(repo): Extension<Arc<Repo>>,
-    query: Query<GetIsuConditionQuery>,
+    _query: Query<GetIsuConditionQuery>,
     Path(jia_isu_uuid): Path<String>,
     current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
