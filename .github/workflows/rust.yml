@@ -28,6 +28,7 @@ jobs:
             sleep 1
           done
 
+          docker-compose exec -T db mysql -e "create database isucondition_test"
           MYSQL_DBNAME=isucondition_test ./sql/init.sh
     - name: Build
       run: |
