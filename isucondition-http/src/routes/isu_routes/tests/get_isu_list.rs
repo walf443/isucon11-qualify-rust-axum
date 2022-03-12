@@ -7,14 +7,11 @@ use isucondition_core::repos::repository_manager::tests::MockRepositoryManager;
 use std::sync::Arc;
 
 #[tokio::test]
-async fn no_sigined_in() -> Result<(), anyhow::Error> {
+#[should_panic(expected = "UnauthorizedError")]
+async fn no_sigined_in() -> () {
     let repo = MockRepositoryManager::new();
     let ext_repo = Extension(Arc::new(repo));
-    let result = get_isu_list(ext_repo, CurrentUserID::None).await;
-    let expected_err: Result<(), Error> = Err(Error::UnauthorizedError());
-    assert!(matches!(result, expected_err));
-
-    Ok(())
+    get_isu_list(ext_repo, CurrentUserID::None).await.unwrap();
 }
 
 #[tokio::test]
