@@ -8,7 +8,7 @@ use async_trait::async_trait;
 #[cfg(test)]
 mod tests;
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait IsuRepository {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;

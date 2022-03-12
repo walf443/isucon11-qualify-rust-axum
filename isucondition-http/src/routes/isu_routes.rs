@@ -75,3 +75,24 @@ pub async fn get_isu_icon<Repo: RepositoryManager>(
 pub async fn get_isu_graph(Path(_jia_isu_uuid): Path<String>) -> impl IntoResponse {
     (StatusCode::OK, Json(vec!["Hello, world"]))
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::get_isu_list;
+    use crate::requests::current_user_id::CurrentUserID;
+    use crate::responses::error::Error;
+    use axum::extract::Extension;
+    use isucondition_core::repos::repository_manager::tests::MockRepositoryManager;
+    use std::sync::Arc;
+
+    #[tokio::test]
+    async fn get_isu_list_no_sigined_in() -> Result<(), anyhow::Error> {
+        let repo = MockRepositoryManager::new();
+        let ext_repo = Extension(Arc::new(repo));
+        let result = get_isu_list(ext_repo, CurrentUserID::None).await;
+        let expected_err: Result<(), Error> = Err(Error::UnauthorizedError());
+        assert!(matches!(result, expected_err));
+
+        Ok(())
+    }
+}

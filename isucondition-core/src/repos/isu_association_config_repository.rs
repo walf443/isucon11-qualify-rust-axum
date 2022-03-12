@@ -3,7 +3,7 @@ use crate::models::isu_association_config::IsuAssociationConfigForm;
 use crate::repos::Result;
 use async_trait::async_trait;
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait IsuAssociationConfigRepository {
     async fn insert(&self, form: &IsuAssociationConfigForm) -> Result<()>;

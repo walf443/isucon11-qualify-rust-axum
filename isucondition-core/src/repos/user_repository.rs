@@ -3,7 +3,7 @@ use crate::models::user::UserID;
 use crate::repos::Result;
 use async_trait::async_trait;
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait UserRepository {
     async fn insert(&self, jia_user_id: String) -> Result<()>;

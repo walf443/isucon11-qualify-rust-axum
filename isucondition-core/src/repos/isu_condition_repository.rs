@@ -6,7 +6,7 @@ use crate::repos::Result;
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
 
-#[cfg_attr(test, mockall::automock)]
+#[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait IsuConditionRepository {
     async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>>;

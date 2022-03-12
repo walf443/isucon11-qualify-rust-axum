@@ -66,7 +66,7 @@ impl RepositoryManager for RepositoryManagerImpl {
     }
 }
 
-#[cfg(test)]
+#[cfg(any(test, feature = "test"))]
 pub mod tests {
     use crate::repos::isu_association_config_repository::MockIsuAssociationConfigRepository;
     use crate::repos::isu_condition_repository::MockIsuConditionRepository;

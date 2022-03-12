@@ -29,3 +29,4 @@ async-redis-session = "0.2.2"
 
 [dev-dependencies]
 sqlx = { version = "0.5", features = ["mysql", "chrono", "runtime-tokio-native-tls"] }
+isucondition-core = { path = "../isucondition-core/", features = ["test"] }
