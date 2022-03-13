@@ -5,7 +5,6 @@ use isucondition_core::models::user::UserID;
 use isucondition_core::repos;
 use isucondition_core::repos::repository_manager::tests::MockRepositoryManager;
 use isucondition_core::services::service_manager::tests::MockServiceManager;
-use isucondition_core::services::service_manager::{ServiceManager, ServiceManagerImpl};
 use std::sync::Arc;
 
 #[tokio::test]

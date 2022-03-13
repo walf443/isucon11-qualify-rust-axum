@@ -38,7 +38,7 @@ impl<R: 'static + RepositoryManager> ServiceManager for ServiceManagerImpl<R> {
 pub mod tests {
     use crate::repos::repository_manager::tests::MockRepositoryManager;
     use crate::repos::repository_manager::RepositoryManager;
-    use crate::services::isu_list_service::{IsuListService, MockIsuListService};
+    use crate::services::isu_list_service::MockIsuListService;
     use crate::services::service_manager::ServiceManager;
     use std::sync::Arc;
 
