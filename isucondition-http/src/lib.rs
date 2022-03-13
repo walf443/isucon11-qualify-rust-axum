@@ -18,7 +18,7 @@ use axum::extract::Extension;
 use axum::routing::{get, post};
 use axum::{Router, Server};
 use isucondition_core::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
-use isucondition_core::services::service_manager::ServiceManager;
+use isucondition_core::services::service_manager::{ServiceManager, ServiceManagerImpl};
 use std::future::Future;
 use std::net::TcpListener;
 use std::sync::Arc;
@@ -28,6 +28,7 @@ use tower_cookies::CookieManagerLayer;
 mod test_helper;
 
 type Repo = RepositoryManagerImpl;
+type Service = ServiceManagerImpl<Repo>;
 
 pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: SessionStore>(
     listener: TcpListener,
@@ -43,7 +44,7 @@ pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: S
         .route("/initialize", post(post_initialize::<Repo>))
         .route("/api/signout", post(post_signout))
         .route("/api/user/me", get(get_me::<Repo>))
-        .route("/api/isu", get(get_isu_list::<Repo>).post(post_isu))
+        .route("/api/isu", get(get_isu_list::<Service>).post(post_isu))
         .route("/api/isu/:jia_isu_uuid", get(get_isu_id::<Repo>))
         .route("/api/isu/:jia_isu_uuid/icon", get(get_isu_icon::<Repo>))
         .route("/api/isu/:jia_isu_uuid/graph", get(get_isu_graph))

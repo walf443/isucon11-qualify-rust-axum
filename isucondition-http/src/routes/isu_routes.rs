@@ -9,18 +9,18 @@ use axum::Json;
 use isucondition_core::models::isu::IsuUUID;
 use isucondition_core::repos::isu_repository::IsuRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
-use isucondition_core::services::service_manager::{ServiceManager, ServiceManagerImpl};
+use isucondition_core::services::isu_list_service::IsuListService;
+use isucondition_core::services::service_manager::ServiceManager;
 use std::sync::Arc;
 
 #[cfg(test)]
 mod tests;
 
-pub async fn get_isu_list<Repo: RepositoryManager>(
-    Extension(repo): Extension<Arc<Repo>>,
+pub async fn get_isu_list<Service: ServiceManager>(
+    Extension(service): Extension<Arc<Service>>,
     current_user_id: CurrentUserID,
 ) -> Result<impl IntoResponse, Error> {
     let current_user_id = current_user_id.try_unwrap()?;
-    let service = ServiceManagerImpl::new(repo);
     let list = service.isu_list_service().run(&current_user_id).await?;
 
     let list: Vec<IsuWithConditionResponse> = list.into_iter().map(|isu| isu.into()).collect();
