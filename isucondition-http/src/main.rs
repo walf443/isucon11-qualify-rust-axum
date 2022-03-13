@@ -1,6 +1,7 @@
 use async_redis_session::RedisSessionStore;
 use isucondition_core::database::{get_db_connection, DBConfig, RedisConfig};
 use isucondition_core::repos::repository_manager::RepositoryManagerImpl;
+use isucondition_core::services::service_manager::ServiceManagerImpl;
 use isucondition_http::run;
 use std::net::TcpListener;
 use std::sync::Arc;
@@ -17,7 +18,8 @@ async fn main() -> hyper::Result<()> {
 
     let redis_config = RedisConfig::default();
     let store = RedisSessionStore::new(redis_config.url).unwrap();
-    let server = run(listener, repo_manager, store)?;
+    let service_manager = Arc::new(ServiceManagerImpl::new(repo_manager.clone()));
+    let server = run(listener, repo_manager, service_manager, store)?;
 
     server.await
 }

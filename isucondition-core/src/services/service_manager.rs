@@ -1,13 +1,14 @@
-use crate::repos::repository_manager::{RepositoryManager};
+use crate::repos::repository_manager::RepositoryManager;
 use crate::services::isu_list_service::IsuListService;
 use std::sync::Arc;
 
-pub trait ServiceManager {
+pub trait ServiceManager: Clone + std::marker::Send + std::marker::Sync {
     type Repo: RepositoryManager;
 
     fn isu_list_service(&self) -> IsuListService<Self::Repo>;
 }
 
+#[derive(Clone)]
 pub struct ServiceManagerImpl<R: RepositoryManager> {
     repo: Arc<R>,
 }

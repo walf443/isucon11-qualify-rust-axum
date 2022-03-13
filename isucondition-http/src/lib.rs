@@ -18,6 +18,7 @@ use axum::extract::Extension;
 use axum::routing::{get, post};
 use axum::{Router, Server};
 use isucondition_core::repos::repository_manager::{RepositoryManager, RepositoryManagerImpl};
+use isucondition_core::services::service_manager::ServiceManager;
 use std::future::Future;
 use std::net::TcpListener;
 use std::sync::Arc;
@@ -28,12 +29,14 @@ mod test_helper;
 
 type Repo = RepositoryManagerImpl;
 
-pub fn run<R: 'static + RepositoryManager, Store: SessionStore>(
+pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: SessionStore>(
     listener: TcpListener,
     repo_manager: Arc<R>,
+    service_manager: Arc<S>,
     session_store: Store,
 ) -> Result<impl Future<Output = hyper::Result<()>>, hyper::Error> {
     let repo_manager_layer = Extension(repo_manager);
+    let service_manager_layer = Extension(service_manager);
 
     let app = Router::new()
         .route("/", get(get_index))
@@ -51,6 +54,7 @@ pub fn run<R: 'static + RepositoryManager, Store: SessionStore>(
         .route("/api/trend", get(get_trend::<Repo>))
         .route("/api/auth", post(post_authentication::<Repo>))
         .layer(repo_manager_layer)
+        .layer(service_manager_layer)
         .layer(Extension(session_store))
         .layer(CookieManagerLayer::new());
 
