@@ -3,11 +3,11 @@ use chrono::NaiveDateTime;
 use std::fmt::{Display, Formatter};
 
 #[derive(Debug, sqlx::Type, PartialEq, Clone)]
-pub struct IsuConditionID(String);
+pub struct IsuConditionID(u64);
 
 impl IsuConditionID {
-    pub fn new(str: String) -> Self {
-        Self { 0: str }
+    pub fn new(num: u64) -> Self {
+        Self { 0: num }
     }
 }
 

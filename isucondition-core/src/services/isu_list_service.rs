@@ -123,7 +123,7 @@ mod tests {
             .returning(|uuid| {
                 if uuid == &IsuUUID::new("test2".to_string()) {
                     Ok(Some(IsuCondition {
-                        id: IsuConditionID::new("1".to_string()),
+                        id: IsuConditionID::new(1),
                         jia_isu_uuid: IsuUUID::new("test2".to_string()),
                         is_sitting: false,
                         condition: "".to_string(),

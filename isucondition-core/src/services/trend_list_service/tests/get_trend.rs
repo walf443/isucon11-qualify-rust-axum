@@ -76,7 +76,7 @@ async fn with_info_condition() -> Result<()> {
         .expect_find_last_by_isu_id()
         .returning(|_| {
             let condition = IsuCondition {
-                id: IsuConditionID::new("1".to_string()),
+                id: IsuConditionID::new(1),
                 jia_isu_uuid: IsuUUID::new("test".to_string()),
                 is_sitting: false,
                 condition: "".to_string(),
@@ -118,7 +118,7 @@ async fn with_warning_condition() -> Result<()> {
         .expect_find_last_by_isu_id()
         .returning(|_| {
             let condition = IsuCondition {
-                id: IsuConditionID::new("1".to_string()),
+                id: IsuConditionID::new(1),
                 jia_isu_uuid: IsuUUID::new("test".to_string()),
                 is_sitting: false,
                 condition: "hoghoge=true".to_string(),
@@ -160,7 +160,7 @@ async fn with_critical_condition() -> Result<()> {
         .expect_find_last_by_isu_id()
         .returning(|_| {
             let condition = IsuCondition {
-                id: IsuConditionID::new("1".to_string()),
+                id: IsuConditionID::new(1),
                 jia_isu_uuid: IsuUUID::new("test".to_string()),
                 is_sitting: false,
                 condition: "foo=true,bar=true,baz=true".to_string(),
