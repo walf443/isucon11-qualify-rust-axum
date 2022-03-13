@@ -5,7 +5,6 @@ use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
 use crate::repos::Result;
-use crate::services::service_manager::ServiceManager;
 use async_trait::async_trait;
 use std::sync::Arc;
 

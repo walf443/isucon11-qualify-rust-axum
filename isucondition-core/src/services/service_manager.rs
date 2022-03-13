@@ -54,17 +54,16 @@ pub mod tests {
     use std::sync::Arc;
 
     pub struct MockServiceManager<R: 'static + RepositoryManager> {
-        pub repo: Arc<R>,
         pub isu_list_service: MockIsuListService<R>,
         pub trend_list_service: MockTrendListService<R>,
     }
 
     impl MockServiceManager<MockRepositoryManager> {
-        pub fn new(repo: Arc<MockRepositoryManager>) -> Self {
+        // _repo is ignored
+        pub fn new(_repo: Arc<MockRepositoryManager>) -> Self {
             let isu_list_service = MockIsuListService::new();
             let trend_list_service = MockTrendListService::new();
             Self {
-                repo,
                 isu_list_service,
                 trend_list_service,
             }
@@ -91,7 +90,6 @@ pub mod tests {
             let isu_list_service = MockIsuListService::new();
             let trend_list_service = MockTrendListService::new();
             Self {
-                repo: self.repo.clone(),
                 isu_list_service,
                 trend_list_service,
             }
