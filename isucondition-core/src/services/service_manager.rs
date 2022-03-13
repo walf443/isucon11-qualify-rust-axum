@@ -17,10 +17,10 @@ pub struct ServiceManagerImpl<R: RepositoryManager> {
 
 impl<R: 'static + RepositoryManager> ServiceManagerImpl<R> {
     pub fn new(repo: Arc<R>) -> Self {
-        let isu_list_service = IsuListServiceImpl::new(repo.clone());
+        let isu_list_service = IsuListServiceImpl::from_repo(repo.clone());
         Self {
-            repo: repo,
-            isu_list_service: isu_list_service,
+            repo,
+            isu_list_service,
         }
     }
 }
@@ -47,6 +47,16 @@ pub mod tests {
         pub isu_list_service: MockIsuListService<R>,
     }
 
+    impl MockServiceManager<MockRepositoryManager> {
+        pub fn new(repo: Arc<MockRepositoryManager>) -> Self {
+            let isu_list_service = MockIsuListService::new();
+            Self {
+                repo,
+                isu_list_service,
+            }
+        }
+    }
+
     impl ServiceManager for MockServiceManager<MockRepositoryManager> {
         type Repo = MockRepositoryManager;
         type IsuListSrv = MockIsuListService<Self::Repo>;
@@ -57,8 +67,13 @@ pub mod tests {
     }
 
     impl<R: RepositoryManager> Clone for MockServiceManager<R> {
+        // automock does not implement Clone trait, so give up copying mock expectation
         fn clone(&self) -> Self {
-            todo!()
+            let isu_list_service = MockIsuListService::new();
+            Self {
+                repo: self.repo.clone(),
+                isu_list_service,
+            }
         }
     }
 }

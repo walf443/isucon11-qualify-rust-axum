@@ -14,7 +14,7 @@ pub type IsuWithCondition = (Isu, Option<IsuCondition>);
 #[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait IsuListService<R: 'static + RepositoryManager> {
-    fn new(repo: Arc<R>) -> Self;
+    fn from_repo(repo: Arc<R>) -> Self;
     async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>>;
 }
 
@@ -25,7 +25,7 @@ pub struct IsuListServiceImpl<R: RepositoryManager> {
 
 #[async_trait]
 impl<R: 'static + RepositoryManager> IsuListService<R> for IsuListServiceImpl<R> {
-    fn new(repo: Arc<R>) -> Self {
+    fn from_repo(repo: Arc<R>) -> Self {
         Self { repo }
     }
 
@@ -72,7 +72,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Ok(vec![]));
 
-        let service = IsuListServiceImpl::new(Arc::new(repo));
+        let service = IsuListServiceImpl::from_repo(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 0);
 
@@ -87,7 +87,7 @@ mod tests {
             .expect_find_all_by_user_id()
             .returning(|_user_id| Err(repos::Error::TestError()));
 
-        let service = IsuListServiceImpl::new(Arc::new(repo));
+        let service = IsuListServiceImpl::from_repo(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await;
         assert!(result.is_err());
 
@@ -137,7 +137,7 @@ mod tests {
                 }
             });
 
-        let service = IsuListServiceImpl::new(Arc::new(repo));
+        let service = IsuListServiceImpl::from_repo(Arc::new(repo));
         let result = service.run(&UserID::new("test".to_string())).await?;
         assert_eq!(result.len(), 2);
 
