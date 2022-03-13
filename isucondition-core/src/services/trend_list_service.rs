@@ -3,17 +3,28 @@ use crate::repos;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
 use crate::services::trend_service::TrendService;
+use async_trait::async_trait;
+use std::sync::Arc;
 
-pub struct TrendListService<'r, R: RepositoryManager> {
-    repo: &'r R,
+#[cfg_attr(any(test, feature = "test"), mockall::automock)]
+#[async_trait]
+pub trait TrendListService<R: 'static + RepositoryManager> {
+    fn from_repo(repo: Arc<R>) -> Self;
+    async fn run(&self) -> repos::Result<Vec<Trend>>;
 }
 
-impl<'r, R: RepositoryManager> TrendListService<'r, R> {
-    pub fn new(repo: &'r R) -> Self {
+#[derive(Clone)]
+pub struct TrendListServiceImpl<R: RepositoryManager> {
+    repo: Arc<R>,
+}
+
+#[async_trait]
+impl<R: 'static + RepositoryManager> TrendListService<R> for TrendListServiceImpl<R> {
+    fn from_repo(repo: Arc<R>) -> Self {
         Self { repo }
     }
 
-    pub async fn run(&self) -> repos::Result<Vec<Trend>> {
+    async fn run(&self) -> repos::Result<Vec<Trend>> {
         let character_list = self.repo.isu_repository().find_character_group_by().await?;
 
         let mut trends: Vec<Trend> = Vec::new();
@@ -21,7 +32,7 @@ impl<'r, R: RepositoryManager> TrendListService<'r, R> {
         for character in character_list {
             if !character.is_none() {
                 let character = character.unwrap();
-                let trend_service = TrendService::new(self.repo);
+                let trend_service = TrendService::new(self.repo.as_ref());
                 let trend = trend_service.run(character).await?;
 
                 trends.push(trend);
@@ -36,8 +47,9 @@ impl<'r, R: RepositoryManager> TrendListService<'r, R> {
 mod tests {
     use crate::repos;
     use crate::repos::repository_manager::tests::MockRepositoryManager;
-    use crate::services::trend_list_service::TrendListService;
+    use crate::services::trend_list_service::{TrendListService, TrendListServiceImpl};
     use repos::Result;
+    use std::sync::Arc;
 
     #[tokio::test]
     async fn with_empty_character() -> Result<()> {
@@ -46,7 +58,7 @@ mod tests {
             .expect_find_character_group_by()
             .returning(|| Ok(Vec::new()));
 
-        let service = TrendListService::new(&repo);
+        let service = TrendListServiceImpl::from_repo(Arc::new(repo));
         let result = service.run().await?;
 
         assert_eq!(result.len(), 0);

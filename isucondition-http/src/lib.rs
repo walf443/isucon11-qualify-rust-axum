@@ -52,7 +52,7 @@ pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: S
             "/api/isu/condition/:jia_isu_uuid",
             get(get_isu_conditions::<Repo>).post(post_isu_condition),
         )
-        .route("/api/trend", get(get_trend::<Repo>))
+        .route("/api/trend", get(get_trend::<Service>))
         .route("/api/auth", post(post_authentication::<Repo>))
         .layer(repo_manager_layer)
         .layer(service_manager_layer)
