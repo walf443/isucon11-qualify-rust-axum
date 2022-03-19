@@ -11,7 +11,7 @@ use crate::routes::get_index;
 use crate::routes::initialize_routes::post_initialize;
 use crate::routes::isu_condition_routes::{get_isu_conditions, post_isu_condition};
 use crate::routes::isu_routes::{get_isu_graph, get_isu_icon, get_isu_id, get_isu_list, post_isu};
-use crate::routes::trend_routes::get_trend;
+use crate::routes::trend_routes::get_trends;
 use crate::routes::user_routes::get_me;
 use async_session::SessionStore;
 use axum::extract::Extension;
@@ -52,7 +52,7 @@ pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: S
             "/api/isu/condition/:jia_isu_uuid",
             get(get_isu_conditions::<Repo>).post(post_isu_condition),
         )
-        .route("/api/trend", get(get_trend::<Service>))
+        .route("/api/trend", get(get_trends::<Service>))
         .route("/api/auth", post(post_authentication::<Repo>))
         .layer(repo_manager_layer)
         .layer(service_manager_layer)
