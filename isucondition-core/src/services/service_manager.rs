@@ -14,7 +14,6 @@ pub trait ServiceManager: Clone + std::marker::Send + std::marker::Sync {
 
 #[derive(Clone)]
 pub struct ServiceManagerImpl<R: RepositoryManager> {
-    repo: Arc<R>,
     isu_list_service: IsuListServiceImpl<R>,
     trend_list_service: TrendListServiceImpl<R>,
 }
@@ -24,7 +23,6 @@ impl<R: 'static + RepositoryManager> ServiceManagerImpl<R> {
         let isu_list_service = IsuListServiceImpl::from_repo(repo.clone());
         let trend_list_service = TrendListServiceImpl::from_repo(repo.clone());
         Self {
-            repo,
             isu_list_service,
             trend_list_service,
         }
