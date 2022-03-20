@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["NamePredicate","Augment an existing predicate with a name."]],"trait":[["PredicateNameExt","`Predicate` extension that adds naming predicate expressions."]]});

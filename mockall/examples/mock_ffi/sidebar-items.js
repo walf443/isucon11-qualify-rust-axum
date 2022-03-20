@@ -1,1 +1,0 @@
-initSidebarItems({"fn":[["checkpoint","Verify that all current expectations for every function in this module are satisfied and clear them."],["ffi_func","A foreign “C” function."],["ffi_func_context","Create a `Context` for mocking the `ffi_func` method"]],"mod":[["__ffi_func",""]]});

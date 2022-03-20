@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["AsyncStd","Represents an AsyncStd connectable"]],"struct":[["AsyncStdWrapped","Wraps the async_std `AsyncRead/AsyncWrite` in order to implement the required the tokio traits for it"]]});

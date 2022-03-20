@@ -1,1 +1,0 @@
-initSidebarItems({"mod":[["future","[`Future`] types."]],"struct":[["CookieManager","Middleware to use [`Cookies`]."],["CookieManagerLayer","Layer to apply [`CookieManager`] middleware."]]});

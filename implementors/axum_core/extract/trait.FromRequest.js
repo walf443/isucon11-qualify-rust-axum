@@ -1,4 +1,0 @@
-(function() {var implementors = {};
-implementors["axum_core"] = [];
-implementors["tower_cookies"] = [{"text":"impl&lt;B&gt; <a class=\"trait\" href=\"axum_core/extract/trait.FromRequest.html\" title=\"trait axum_core::extract::FromRequest\">FromRequest</a>&lt;B&gt; for <a class=\"struct\" href=\"tower_cookies/struct.Cookies.html\" title=\"struct tower_cookies::Cookies\">Cookies</a> <span class=\"where fmt-newline\">where<br>&nbsp;&nbsp;&nbsp;&nbsp;B: <a class=\"trait\" href=\"https://doc.rust-lang.org/1.59.0/core/marker/trait.Send.html\" title=\"trait core::marker::Send\">Send</a>,&nbsp;</span>","synthetic":false,"types":["tower_cookies::Cookies"]}];
-if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

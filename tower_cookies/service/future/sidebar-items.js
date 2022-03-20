@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["ResponseFuture","Response future for [`CookieManager`]."]]});

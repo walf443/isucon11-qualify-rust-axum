@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["Expectation","Expectation type for methods taking a `&mut self` argument and returning references.  This is the type returned by the `expect_*` methods."]]});

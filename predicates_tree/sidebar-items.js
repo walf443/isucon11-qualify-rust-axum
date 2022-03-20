@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["CaseTree","A `Case` rendered as a tree for display."]],"trait":[["CaseTreeExt","Render `Self` as a displayable tree."]]});
