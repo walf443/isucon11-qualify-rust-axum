@@ -38,7 +38,7 @@ jobs:
           cargo test --workspace --verbose -- --test-threads=1 --nocapture
     - name: generate doc
       run: |
-          cargo doc
+          cargo doc --no-deps
     - name: publish pages
       uses: peaceiris/actions-gh-pages@v3
       with:
