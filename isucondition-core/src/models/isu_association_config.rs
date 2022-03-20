@@ -1,4 +1,5 @@
 use crate::models::Error;
+use crate::models::Error::HttpUrlParseError;
 use url::Url;
 
 pub struct IsuAssociationConfigForm {
@@ -9,6 +10,9 @@ pub struct IsuAssociationConfigForm {
 impl IsuAssociationConfigForm {
     pub fn build(name: String, url: String) -> Result<Self, Error> {
         let url = Url::parse(&url)?;
+        if url.scheme() != "http" && url.scheme() != "https" {
+            return Err(HttpUrlParseError());
+        }
         let name = NameString::parse(name)?;
         Ok(Self { name, url })
     }

@@ -12,6 +12,8 @@ pub enum Error {
     #[error("error for testing")]
     TestError(),
     #[error("failed to parse URL")]
+    HttpUrlParseError(),
+    #[error("failed to parse URL")]
     UrlParseError(#[from] ParseError),
 }
 

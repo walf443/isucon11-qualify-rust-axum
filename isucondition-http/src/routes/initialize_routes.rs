@@ -11,7 +11,6 @@ use isucondition_core::services::service_manager::ServiceManager;
 use serde::Deserialize;
 use serde::Serialize;
 use std::sync::Arc;
-use tracing::log;
 
 #[derive(Serialize, Deserialize)]
 pub struct PostInitializeRequest {
@@ -28,12 +27,12 @@ pub async fn post_initialize<Repo: RepositoryManager, Service: ServiceManager>(
     Extension(service): Extension<Arc<Service>>,
     Json(payload): Json<PostInitializeRequest>,
 ) -> Result<impl IntoResponse, responses::error::Error> {
-    service.reset_database_service().run().await?;
-
     let form = IsuAssociationConfigForm::build(
         "jia_service_url".to_string(),
         payload.jia_service_url.to_string(),
     )?;
+
+    service.reset_database_service().run().await?;
 
     repo.isu_association_config_repository()
         .insert(&form)
@@ -49,63 +48,106 @@ pub async fn post_initialize<Repo: RepositoryManager, Service: ServiceManager>(
 
 #[cfg(test)]
 mod tests {
-    use crate::routes::initialize_routes::{PostInitializeRequest, PostInitializeResponse};
-    use crate::test_helper;
-    use axum::http::StatusCode;
-    use isucondition_core::test::Cleaner;
+    use crate::post_initialize;
+    use crate::responses::error::Error;
+    use crate::routes::initialize_routes::PostInitializeRequest;
+    use axum::extract::Extension;
+    use axum::Json;
+    use isucondition_core::repos::repository_manager::tests::MockRepositoryManager;
+    use isucondition_core::repos::Error::{CommandExecutionError, TestError};
+    use isucondition_core::services::service_manager::tests::MockServiceManager;
+    use std::sync::Arc;
 
     #[tokio::test]
-    async fn test_post_initialize() -> anyhow::Result<()> {
-        std::env::set_var(
-            "MYSQL_DBNAME",
-            std::env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned()),
-        );
-        let app = test_helper::spawn_app().await;
-        let mut cleaner = Cleaner::new(app.database.clone());
-        cleaner.prepare_table("isu_association_config").await?;
-        let client = reqwest::Client::new();
-        let res = client
-            .post(app.url.join("/initialize").unwrap())
-            .json(&PostInitializeRequest {
-                jia_service_url: "http://localost:3000".to_string(),
-            })
-            .send()
-            .await
-            .expect("Failed to request");
+    #[should_panic(expected = "HttpUrlParseError")]
+    async fn invalid_jia_service_url() {
+        let repo = Arc::new(MockRepositoryManager::new());
+        let service = MockServiceManager::new(repo.clone());
 
-        assert_eq!(StatusCode::OK, res.status());
-        let json = res.json::<PostInitializeResponse>().await?;
-        assert_eq!("rust", json.language);
+        let res = post_initialize(
+            Extension(repo),
+            Extension(Arc::new(service)),
+            Json(PostInitializeRequest {
+                jia_service_url: "javascript://alert('hoge')".to_string(),
+            }),
+        )
+        .await;
 
-        let result = sqlx::query!("SELECT COUNT(*) as count from isu_association_config")
-            .fetch_one(&app.database)
-            .await;
-        assert_eq!(
-            1,
-            result.unwrap().count,
-            "isu_association_config record created"
-        );
-
-        cleaner.clean().await?;
-
-        Ok(())
+        res.unwrap();
     }
 
     #[tokio::test]
-    async fn test_post_initialize_with_empty_body() -> anyhow::Result<()> {
-        std::env::set_var(
-            "MYSQL_DBNAME",
-            std::env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned()),
-        );
-        let app = test_helper::spawn_app().await;
-        let client = reqwest::Client::new();
-        let res = client
-            .post(app.url.join("/initialize").unwrap())
-            .send()
-            .await
-            .expect("Failed to request");
+    #[should_panic(expected = "CommandExecutionError")]
+    async fn reset_database_fail() {
+        let repo = Arc::new(MockRepositoryManager::new());
+        let mut service = MockServiceManager::new(repo.clone());
+        service
+            .reset_database_service
+            .expect_run()
+            .returning(|| Err(CommandExecutionError()));
 
-        assert_eq!(StatusCode::UNSUPPORTED_MEDIA_TYPE, res.status());
+        let res = post_initialize(
+            Extension(repo),
+            Extension(Arc::new(service)),
+            Json(PostInitializeRequest {
+                jia_service_url: "http://localhost:3000".to_string(),
+            }),
+        )
+        .await;
+
+        res.unwrap();
+    }
+
+    #[tokio::test]
+    #[should_panic(expected = "ReposError")]
+    async fn isu_association_insert_fail() {
+        let mut repo = MockRepositoryManager::new();
+        repo.isu_association_config_repository
+            .expect_insert()
+            .returning(|_form| Err(TestError()));
+
+        let repo = Arc::new(repo);
+        let mut service = MockServiceManager::new(repo.clone());
+        service
+            .reset_database_service
+            .expect_run()
+            .returning(|| Ok(()));
+
+        let res = post_initialize(
+            Extension(repo),
+            Extension(Arc::new(service)),
+            Json(PostInitializeRequest {
+                jia_service_url: "http://localhost:3000".to_string(),
+            }),
+        )
+        .await;
+
+        res.unwrap();
+    }
+
+    #[tokio::test]
+    async fn success() -> Result<(), Error> {
+        let mut repo = MockRepositoryManager::new();
+        repo.isu_association_config_repository
+            .expect_insert()
+            .returning(|_form| Ok(()));
+
+        let repo = Arc::new(repo);
+        let mut service = MockServiceManager::new(repo.clone());
+        service
+            .reset_database_service
+            .expect_run()
+            .returning(|| Ok(()));
+
+        let res = post_initialize(
+            Extension(repo),
+            Extension(Arc::new(service)),
+            Json(PostInitializeRequest {
+                jia_service_url: "http://localhost:3000".to_string(),
+            }),
+        )
+        .await;
+        assert!(res.is_ok());
 
         Ok(())
     }
