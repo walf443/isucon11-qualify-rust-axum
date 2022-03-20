@@ -38,7 +38,7 @@ jobs:
           cargo test --workspace --verbose -- --test-threads=1 --nocapture
     - name: generate doc
       run: |
-          cargo doc --no-deps
+          cargo doc --no-deps --frozen
     - name: publish pages
       if: github.ref == 'refs/heads/master'
       uses: peaceiris/actions-gh-pages@v3
