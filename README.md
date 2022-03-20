@@ -38,6 +38,8 @@ flowchart LR
 ## isucondition-core
 core application API. don't handle HTTP
 
+see [cargo doc](https://walf443.github.io/isucon11-qualify-rust-axum/isucondition_core/) for more detetails.
+
 ```mermaid
 
 flowchart LR
