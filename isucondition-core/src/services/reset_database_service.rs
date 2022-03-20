@@ -31,3 +31,20 @@ impl ResetDatabaseService for ResetDatabaseServiceImpl {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::services::reset_database_service::{ResetDatabaseService, ResetDatabaseServiceImpl};
+
+    #[tokio::test]
+    async fn success() {
+        std::env::set_var(
+            "MYSQL_DBNAME",
+            std::env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned()),
+        );
+
+        let service = ResetDatabaseServiceImpl::new();
+        let result = service.run().await;
+        assert!(result.is_ok());
+    }
+}
