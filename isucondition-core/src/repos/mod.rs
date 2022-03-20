@@ -10,8 +10,12 @@ use thiserror::Error;
 pub enum Error {
     #[error("error for testing")]
     TestError(),
+    #[error("failed to execute command")]
+    CommandExecutionError(),
     #[error("failed to execute query")]
     SqlError(#[from] sqlx::Error),
+    #[error("io error")]
+    IoError(#[from] std::io::Error),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;

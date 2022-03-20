@@ -41,7 +41,7 @@ pub fn run<R: 'static + RepositoryManager, S: 'static + ServiceManager, Store: S
 
     let app = Router::new()
         .route("/", get(get_index))
-        .route("/initialize", post(post_initialize::<Repo>))
+        .route("/initialize", post(post_initialize::<Repo, Service>))
         .route("/api/signout", post(post_signout))
         .route("/api/user/me", get(get_me::<Repo>))
         .route("/api/isu", get(get_isu_list::<Service>).post(post_isu))

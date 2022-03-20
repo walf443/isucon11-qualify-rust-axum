@@ -1,3 +1,4 @@
+use crate::responses;
 use axum::extract::Extension;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
@@ -5,6 +6,8 @@ use axum::Json;
 use isucondition_core::models::isu_association_config::IsuAssociationConfigForm;
 use isucondition_core::repos::isu_association_config_repository::IsuAssociationConfigRepository;
 use isucondition_core::repos::repository_manager::RepositoryManager;
+use isucondition_core::services::reset_database_service::ResetDatabaseService;
+use isucondition_core::services::service_manager::ServiceManager;
 use serde::Deserialize;
 use serde::Serialize;
 use std::sync::Arc;
@@ -20,39 +23,21 @@ struct PostInitializeResponse {
     language: String,
 }
 
-pub async fn post_initialize<Repo: RepositoryManager>(
+pub async fn post_initialize<Repo: RepositoryManager, Service: ServiceManager>(
     Extension(repo): Extension<Arc<Repo>>,
+    Extension(service): Extension<Arc<Service>>,
     Json(payload): Json<PostInitializeRequest>,
-) -> Result<impl IntoResponse, (StatusCode, String)> {
-    let status = tokio::process::Command::new("../sql/init.sh")
-        .status()
-        .await
-        .map_err(|e| {
-            log::error!("exec init.sh error");
-            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-        })?;
-
-    if !status.success() {
-        log::error!("exec init.sh failed with exit code {:?}", status.code());
-        return Err((
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "exec init.sh".to_string(),
-        ));
-    }
+) -> Result<impl IntoResponse, responses::error::Error> {
+    service.reset_database_service().run().await?;
 
     let form = IsuAssociationConfigForm::build(
         "jia_service_url".to_string(),
         payload.jia_service_url.to_string(),
-    )
-    .map_err(|_| (StatusCode::BAD_REQUEST, "invalid input".to_string()))?;
+    )?;
 
     repo.isu_association_config_repository()
         .insert(&form)
-        .await
-        .map_err(|e| {
-            log::error!("insert isu_association_config error");
-            (StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-        })?;
+        .await?;
 
     Ok((
         StatusCode::OK,
