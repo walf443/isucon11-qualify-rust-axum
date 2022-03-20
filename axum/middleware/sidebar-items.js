@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["from_fn","Create a middleware from an async function."]],"mod":[["future","Future types."]],"struct":[["FromFn","A middleware created from an async function."],["FromFnLayer","A [`tower::Layer`] from an async function."],["Next","The remainder of a middleware stack, including the handler."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["context_diff",""],["get_close_matches",""],["unified_diff",""]],"mod":[["differ",""],["sequencematcher",""]]});

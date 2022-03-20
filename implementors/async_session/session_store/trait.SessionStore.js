@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["async_redis_session"] = [{"text":"impl <a class=\"trait\" href=\"async_session/session_store/trait.SessionStore.html\" title=\"trait async_session::session_store::SessionStore\">SessionStore</a> for <a class=\"struct\" href=\"async_redis_session/struct.RedisSessionStore.html\" title=\"struct async_redis_session::RedisSessionStore\">RedisSessionStore</a>","synthetic":false,"types":["async_redis_session::RedisSessionStore"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

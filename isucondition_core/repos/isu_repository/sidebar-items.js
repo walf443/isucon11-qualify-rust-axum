@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["__mock_MockIsuRepository",""],["__mock_MockIsuRepository_IsuRepository",""]],"struct":[["IsuRepositoryImpl",""],["MockIsuRepository",""]],"trait":[["IsuRepository",""]]});

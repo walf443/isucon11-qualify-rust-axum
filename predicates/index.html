@@ -1,0 +1,172 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Composable first-order predicate functions."><meta name="keywords" content="rust, rustlang, rust-lang, predicates"><title>predicates - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><script defer src="../main.js"></script>
+    <noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../predicates/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.png" alt="logo"></div>
+        </a><h2 class="location">Crate predicates</h2><div class="block version"><div class="narrow-helper"></div><p>Version 2.1.1</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all predicates's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></div><div id="sidebar-vars" data-name="predicates" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../predicates/index.html"><img class="rust-logo" src="../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">predicates</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/predicates/lib.rs.html#9-226" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Composable first-order predicate functions.</p>
+<p>This library implements an interface to “predicates” - boolean-valued
+functions of one argument. This allows combinatorial logic to be created and
+assembled at runtime and then used one or more times for evaluating values.
+This sort of object is really useful when creating filters and checks that
+can be changed at runtime with user interaction - it allows a clean
+separation of concerns where the configuration code can be used to build up
+a predicate, and then that predicate can be given to the code that does the
+actual filtering without the filtering code knowing anything about user
+configuration. See the examples for how this can work.</p>
+<h3 id="installation" class="section-header"><a href="#installation">Installation</a></h3>
+<p>Add this to your <code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+predicates = &quot;2.1.1&quot;</code></pre></div>
+<p>A <a href="prelude/index.html" title="prelude">prelude</a> is available to bring in all extension traits as well as providing
+<code>prelude::predicate</code> which focuses on the 90% case of the API.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;</code></pre></div>
+<h3 id="examples" class="section-header"><a href="#examples">Examples</a></h3>
+<p>The simplest predicates are <a href="constant/fn.always.html"><code>predicate::always</code></a> and <a href="constant/fn.never.html"><code>predicate::never</code></a>, which always
+returns <code>true</code> and always returns <code>false</code>, respectively. The values are simply ignored when
+evaluating against these predicates:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;
+
+<span class="kw">let</span> <span class="ident">always_true</span> <span class="op">=</span> <span class="ident">predicate::always</span>();
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">always_true</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">5</span>));
+<span class="kw">let</span> <span class="ident">always_false</span> <span class="op">=</span> <span class="ident">predicate::never</span>();
+<span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">always_false</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">5</span>));</code></pre></div>
+<p>Pre-made predicates are available for types that implement the <code>PartialOrd</code> and
+<code>PartialEq</code> traits. The following example uses <code>lt</code>, but <code>eq</code>, <code>ne</code>, <code>le</code>, <code>gt</code>,
+<code>ge</code> are also available.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;
+
+<span class="kw">let</span> <span class="ident">less_than_ten</span> <span class="op">=</span> <span class="ident">predicate::lt</span>(<span class="number">10</span>);
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">less_than_ten</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">9</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">less_than_ten</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">11</span>));</code></pre></div>
+<p>Any function over a reference to the desired <code>Item</code> that returns <code>bool</code>
+can easily be made into a <code>Predicate</code> using the <a href="function/fn.function.html"><code>predicate::function</code></a>
+function.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;
+
+<span class="kw">let</span> <span class="ident">bound</span> <span class="op">=</span> <span class="number">5</span>;
+<span class="kw">let</span> <span class="ident">predicate_fn</span> <span class="op">=</span> <span class="ident">predicate::function</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">x</span><span class="op">|</span> <span class="ident">x</span> <span class="op">&gt;</span><span class="op">=</span> <span class="ident">bound</span>);
+<span class="kw">let</span> <span class="ident">between_5_and_10</span> <span class="op">=</span> <span class="ident">predicate_fn</span>.<span class="ident">and</span>(<span class="ident">predicate::le</span>(<span class="number">10</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">between_5_and_10</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">between_5_and_10</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">3</span>));</code></pre></div>
+<p>The <code>Predicate</code> type is actually a trait, and that trait implements a
+number of useful combinator functions. For example, evaluating for a value
+between two other values can be accomplished as follows:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;
+
+<span class="kw">let</span> <span class="ident">between_5_and_10</span> <span class="op">=</span> <span class="ident">predicate::ge</span>(<span class="number">5</span>).<span class="ident">and</span>(<span class="ident">predicate::le</span>(<span class="number">10</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">between_5_and_10</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">between_5_and_10</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">11</span>));
+<span class="macro">assert_eq!</span>(<span class="bool-val">false</span>, <span class="ident">between_5_and_10</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">4</span>));</code></pre></div>
+<p>The <code>Predicate</code> trait is pretty simple, the core of it is an
+implementation of a <code>eval</code> function that takes a single argument and
+returns a <code>bool</code>. Implementing a custom <code>Predicate</code> still allows all the
+usual combinators of the <code>Predicate</code> trait to work!</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">std::fmt</span>;
+
+<span class="kw">use</span> <span class="ident">predicates::prelude</span>::<span class="kw-2">*</span>;
+
+<span class="kw">struct</span> <span class="ident">IsTheAnswer</span>;
+<span class="kw">impl</span> <span class="ident">Predicate</span><span class="op">&lt;</span><span class="ident">i32</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">IsTheAnswer</span> {
+    <span class="kw">fn</span> <span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">variable</span>: <span class="kw-2">&amp;</span><span class="ident">i32</span>) -&gt; <span class="ident">bool</span> {
+        <span class="kw-2">*</span><span class="ident">variable</span> <span class="op">==</span> <span class="number">42</span>
+    }
+}
+<span class="kw">impl</span> <span class="ident">predicates::reflection::PredicateReflection</span> <span class="kw">for</span> <span class="ident">IsTheAnswer</span> {}
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">IsTheAnswer</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span>) -&gt; <span class="ident">fmt::Result</span> {
+        <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;var.is_the_answer()&quot;</span>)
+    }
+}
+
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">IsTheAnswer</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">42</span>));
+<span class="kw">let</span> <span class="ident">almost_the_answer</span> <span class="op">=</span> <span class="ident">IsTheAnswer</span>.<span class="ident">or</span>(<span class="ident">predicate::in_iter</span>(<span class="macro">vec!</span>[<span class="number">41</span>, <span class="number">43</span>]));
+<span class="macro">assert_eq!</span>(<span class="bool-val">true</span>, <span class="ident">almost_the_answer</span>.<span class="ident">eval</span>(<span class="kw-2">&amp;</span><span class="number">41</span>));</code></pre></div>
+<h3 id="choosing-a-predicate" class="section-header"><a href="#choosing-a-predicate">Choosing a Predicate</a></h3>
+<p>General predicates</p>
+<ul>
+<li><a href="constant/fn.always.html"><code>predicate::always</code></a></li>
+<li><a href="constant/fn.never.html"><code>predicate::never</code></a></li>
+<li><a href="function/fn.function.html"><code>predicate::function</code></a></li>
+<li><a href="iter/fn.in_iter.html"><code>predicate::in_iter</code></a>: Specified value must be in the <code>Iterator</code>.
+<ul>
+<li><a href="iter/struct.InPredicate.html#method.sort"><code>predicate::in_iter(...).sort</code></a>: Optimization for repeatedly called predicates.</li>
+<li><a href="iter/fn.in_hash.html"><code>predicate::in_hash</code></a>: Optimization for repeatedly called predicates.</li>
+</ul>
+</li>
+<li><a href="ord/fn.eq.html"><code>predicate::eq</code></a>
+<ul>
+<li><a href="prelude/predicate/float/fn.is_close.html"><code>predicate::float::is_close</code></a>: Use this instead of <code>eq</code> for floating point values.</li>
+</ul>
+</li>
+<li><a href="ord/fn.ne.html"><code>predicate::ne</code></a></li>
+<li><a href="ord/fn.ge.html"><code>predicate::ge</code></a></li>
+<li><a href="ord/fn.gt.html"><code>predicate::gt</code></a></li>
+<li><a href="ord/fn.le.html"><code>predicate::le</code></a></li>
+<li><a href="ord/fn.lt.html"><code>predicate::lt</code></a></li>
+<li><a href="name/trait.PredicateNameExt.html#method.name"><code>predicate::name</code></a>: Improve readability of failure reporting by providing a meaningful name.</li>
+</ul>
+<p>Combinators</p>
+<ul>
+<li><a href="boolean/trait.PredicateBooleanExt.html#method.and"><code>pred_a.and(pred_b)</code></a>: Both predicates must succeed.</li>
+<li><a href="boolean/trait.PredicateBooleanExt.html#method.or"><code>pred_a.or(pred_b)</code></a>: One or both predicates must succeed.</li>
+<li>[<code>pred_a.not()</code>]: The predicate must fail.</li>
+</ul>
+<p><code>String</code> predicates</p>
+<ul>
+<li><a href="prelude/predicate/str/fn.is_empty.html"><code>predicate::str::is_empty</code></a>: Specified string must be empty</li>
+<li><a href="path/struct.BinaryFilePredicate.html#method.utf8"><code>str_pred = predicate::path::eq_file(...).utf8</code></a>: Specified string must equal the contents
+of the given file.</li>
+<li><a href="prelude/predicate/str/fn.diff.html"><code>predicate::str::diff</code></a>: Same as <code>eq</code> except report a diff.  See <a href="str/struct.DifferencePredicate.html"><code>DifferencePredicate</code></a>
+for more features.</li>
+<li><a href="prelude/predicate/str/fn.starts_with.html"><code>predicate::str::starts_with</code></a>: Specified string must start with the given needle.</li>
+<li><a href="prelude/predicate/str/fn.ends_with.html"><code>predicate::str::ends_with</code></a>: Specified string must end with the given needle.</li>
+<li><a href="prelude/predicate/str/fn.contains.html"><code>predicate::str::contains</code></a>: Specified string must contain the given needle.
+<ul>
+<li><a href="str/struct.ContainsPredicate.html#method.count"><code>predicate::str::contains(...).count</code></a>: Required number of times the needle must show up.</li>
+</ul>
+</li>
+<li><a href="prelude/predicate/str/fn.is_match.html"><code>predicate::str::is_match</code></a>: Specified string must match the given regex.
+<ul>
+<li><a href="str/struct.RegexPredicate.html#method.count"><code>predicate::str::is_match(...).count</code></a>: Required number of times the match must show up.</li>
+</ul>
+</li>
+<li><a href="prelude/trait.PredicateStrExt.html#method.trim"><code>str_pred.trim</code></a>: Trim whitespace before passing it to <code>str_pred</code>.</li>
+<li><a href="prelude/trait.PredicateStrExt.html#method.normalize"><code>str_pred.normalize</code></a>: Normalize the line endings before passing it to <code>str_pred</code>.</li>
+<li><a href="prelude/trait.PredicateStrExt.html#method.from_utf8"><code>bytes_pred = str_pred.from_utf8()</code></a>: Reuse string predicates in other contexts, like the
+file system.</li>
+</ul>
+<p>File system predicates</p>
+<ul>
+<li><a href="prelude/predicate/path/fn.exists.html"><code>predicate::path::exists</code></a>: Specified path must exist on disk.</li>
+<li><a href="prelude/predicate/path/fn.missing.html"><code>predicate::path::missing</code></a>: Specified path must not exist on disk.</li>
+<li><a href="prelude/predicate/path/fn.is_dir.html"><code>predicate::path::is_dir</code></a>: Specified path is a directory.</li>
+<li><a href="prelude/predicate/path/fn.is_file.html"><code>predicate::path::is_file</code></a>: Specified path is a file.</li>
+<li><a href="prelude/predicate/path/fn.is_symlink.html"><code>predicate::path::is_symlink</code></a>: Specified path is a symlink.</li>
+<li><a href="prelude/predicate/path/fn.eq_file.html"><code>path_pred = predicate::path::eq_file</code></a>: Specified path’s contents must equal the contents of the given
+file.</li>
+<li><a href="prelude/trait.PredicateFileContentExt.html#method.from_file_path"><code>path_pred = bytes_pred.from_file_path</code></a>: Specified path’s contents must equal the <code>bytes_pred</code>.</li>
+</ul>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="mod" href="boolean/index.html" title="predicates::boolean mod">boolean</a></div><div class="item-right docblock-short"><p>Definition of boolean logic combinators over <code>Predicate</code>s.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="constant/index.html" title="predicates::constant mod">constant</a></div><div class="item-right docblock-short"><p>Definition of a constant (always true or always false) <code>Predicate</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="float/index.html" title="predicates::float mod">float</a></div><div class="item-right docblock-short"><p>Float Predicates</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="function/index.html" title="predicates::function mod">function</a></div><div class="item-right docblock-short"><p>Definition of <code>Predicate</code> for wrapping a <code>Fn(&amp;T) -&gt; bool</code></p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="iter/index.html" title="predicates::iter mod">iter</a></div><div class="item-right docblock-short"><p>Definition of <code>Predicate</code>s for comparisons of membership in a set.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="name/index.html" title="predicates::name mod">name</a></div><div class="item-right docblock-short"><p>Name predicate expressions.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="ord/index.html" title="predicates::ord mod">ord</a></div><div class="item-right docblock-short"><p>Definition of <code>Predicate</code>s for comparisons over <code>Ord</code> and <code>Eq</code> types.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="path/index.html" title="predicates::path mod">path</a></div><div class="item-right docblock-short"><p>Path Predicates</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="prelude/index.html" title="predicates::prelude mod">prelude</a></div><div class="item-right docblock-short"><p>Module that contains the essentials for working with predicates.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="reflection/index.html" title="predicates::reflection mod">reflection</a></div><div class="item-right docblock-short"><p>Introspect into the state of a <code>Predicate</code>.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="mod" href="str/index.html" title="predicates::str mod">str</a></div><div class="item-right docblock-short"><p>String Predicates</p>
+</div></div></div><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.BoxPredicate.html" title="predicates::BoxPredicate struct">BoxPredicate</a></div><div class="item-right docblock-short"><p><code>Predicate</code> that wraps another <code>Predicate</code> as a trait object, allowing
+sized storage of predicate types.</p>
+</div></div></div><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.Predicate.html" title="predicates::Predicate trait">Predicate</a></div><div class="item-right docblock-short"><p>Trait for generically evaluating a type against a dynamically created
+predicate function.</p>
+</div></div><div class="item-row"><div class="item-left module-item"><a class="trait" href="trait.PredicateBoxExt.html" title="predicates::PredicateBoxExt trait">PredicateBoxExt</a></div><div class="item-right docblock-short"><p><code>Predicate</code> extension for boxing a <code>Predicate</code>.</p>
+</div></div></div></section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="predicates" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0 (9d1b2106e 2022-02-23)" ></div>
+</body></html>

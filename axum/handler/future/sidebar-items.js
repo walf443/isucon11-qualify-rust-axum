@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["IntoServiceFuture","The response future for `IntoService`."]]});

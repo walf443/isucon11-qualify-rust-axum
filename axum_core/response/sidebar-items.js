@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Headers","A response with headers."]],"trait":[["IntoResponse","Trait for generating responses."]],"type":[["Response","Type alias for [`http::Response`] whose body type defaults to [`BoxBody`], the most common body type used with axum."]]});

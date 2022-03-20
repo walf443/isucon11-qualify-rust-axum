@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Expectation","Expectation type for methods taking a `&self` argument and returning immutable references.  This is the type returned by the `expect_*` methods."]]});

@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["reflection","Introspect into the state of a `Predicate`."]],"trait":[["Predicate","Trait for generically evaluating a type against a dynamically created predicate function."]]});

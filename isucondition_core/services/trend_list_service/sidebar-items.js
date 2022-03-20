@@ -1,0 +1,1 @@
+initSidebarItems({"mod":[["__mock_MockTrendListService",""],["__mock_MockTrendListService_TrendListService_2067200994148712976",""]],"struct":[["MockTrendListService",""],["TrendListServiceImpl",""]],"trait":[["TrendListService",""]]});
