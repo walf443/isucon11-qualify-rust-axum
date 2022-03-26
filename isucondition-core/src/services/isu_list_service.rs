@@ -4,6 +4,7 @@ use crate::models::user::UserID;
 use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
+use crate::repos::transaction::Transaction;
 use crate::repos::Result;
 use async_trait::async_trait;
 use std::sync::Arc;
