@@ -142,20 +142,50 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::database::DBConnectionPool</span>;
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_association_config_repository</span>::{
     <span class="ident">IsuAssociationConfigRepository</span>, <span class="ident">IsuAssociationConfigRepositoryImpl</span>,
 };
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_condition_repository</span>::{<span class="ident">IsuConditionRepository</span>, <span class="ident">IsuConditionRepositoryImpl</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_repository</span>::{<span class="ident">IsuRepository</span>, <span class="ident">IsuRepositoryImpl</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::user_repository</span>::{<span class="ident">UserRepository</span>, <span class="ident">UserRepositoryImpl</span>};
+<span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
+<span class="kw">use</span> <span class="ident">sqlx::MySql</span>;
 
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">RepositoryManager</span>: <span class="ident">Clone</span> <span class="op">+</span> <span class="ident">std::marker::Send</span> <span class="op">+</span> <span class="ident">std::marker::Sync</span> {
     <span class="kw">type</span> <span class="ident">IsuRepo</span>: <span class="ident">IsuRepository</span> <span class="op">+</span> <span class="ident">std::marker::Send</span> <span class="op">+</span> <span class="ident">std::marker::Sync</span>;
     <span class="kw">type</span> <span class="ident">IsuAssociationConfigRepo</span>: <span class="ident">IsuAssociationConfigRepository</span>;
     <span class="kw">type</span> <span class="ident">IsuConditionRepo</span>: <span class="ident">IsuConditionRepository</span> <span class="op">+</span> <span class="ident">std::marker::Send</span> <span class="op">+</span> <span class="ident">std::marker::Sync</span>;
     <span class="kw">type</span> <span class="ident">UserRepo</span>: <span class="ident">UserRepository</span>;
 
+    <span class="comment">// todo:  don&#39;t depend on db</span>
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_transaction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">sqlx::Transaction</span><span class="op">&lt;</span><span class="ident">MySql</span><span class="op">&gt;</span>, <span class="ident">repos::Error</span><span class="op">&gt;</span>;
     <span class="kw">fn</span> <span class="ident">isu_repository</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IsuRepo</span>;
     <span class="kw">fn</span> <span class="ident">isu_association_config_repository</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IsuAssociationConfigRepo</span>;
     <span class="kw">fn</span> <span class="ident">isu_condition_repository</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IsuConditionRepo</span>;
@@ -187,11 +217,17 @@
     }
 }
 
+<span class="attribute">#[<span class="ident">async_trait</span>]</span>
 <span class="kw">impl</span> <span class="ident">RepositoryManager</span> <span class="kw">for</span> <span class="ident">RepositoryManagerImpl</span> {
     <span class="kw">type</span> <span class="ident">IsuRepo</span> <span class="op">=</span> <span class="ident">IsuRepositoryImpl</span>;
     <span class="kw">type</span> <span class="ident">IsuAssociationConfigRepo</span> <span class="op">=</span> <span class="ident">IsuAssociationConfigRepositoryImpl</span>;
     <span class="kw">type</span> <span class="ident">IsuConditionRepo</span> <span class="op">=</span> <span class="ident">IsuConditionRepositoryImpl</span>;
     <span class="kw">type</span> <span class="ident">UserRepo</span> <span class="op">=</span> <span class="ident">UserRepositoryImpl</span>;
+
+    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_transaction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">sqlx::Transaction</span><span class="op">&lt;</span><span class="ident">MySql</span><span class="op">&gt;</span>, <span class="ident">repos::Error</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">tx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">isu_repository</span>.<span class="ident">pool</span>.<span class="ident">begin</span>().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">tx</span>)
+    }
 
     <span class="kw">fn</span> <span class="ident">isu_repository</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IsuRepo</span> {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">isu_repository</span>
@@ -212,11 +248,15 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">test</span>, <span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;test&quot;</span>))]</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_association_config_repository::MockIsuAssociationConfigRepository</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_condition_repository::MockIsuConditionRepository</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::isu_repository::MockIsuRepository</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::repository_manager::RepositoryManager</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::user_repository::MockUserRepository</span>;
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::repos::Error</span>;
+    <span class="kw">use</span> <span class="ident">async_trait::async_trait</span>;
+    <span class="kw">use</span> <span class="ident">sqlx</span>::{<span class="ident">MySql</span>, <span class="ident">Transaction</span>};
 
     <span class="kw">impl</span> <span class="ident">Clone</span> <span class="kw">for</span> <span class="ident">MockIsuAssociationConfigRepository</span> {
         <span class="kw">fn</span> <span class="ident">clone</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span> {
@@ -261,11 +301,19 @@
         }
     }
 
+    <span class="attribute">#[<span class="ident">async_trait</span>]</span>
     <span class="kw">impl</span> <span class="ident">RepositoryManager</span> <span class="kw">for</span> <span class="ident">MockRepositoryManager</span> {
         <span class="kw">type</span> <span class="ident">IsuRepo</span> <span class="op">=</span> <span class="ident">MockIsuRepository</span>;
         <span class="kw">type</span> <span class="ident">IsuAssociationConfigRepo</span> <span class="op">=</span> <span class="ident">MockIsuAssociationConfigRepository</span>;
         <span class="kw">type</span> <span class="ident">IsuConditionRepo</span> <span class="op">=</span> <span class="ident">MockIsuConditionRepository</span>;
         <span class="kw">type</span> <span class="ident">UserRepo</span> <span class="op">=</span> <span class="ident">MockUserRepository</span>;
+
+        <span class="comment">// you should use RepositoryImpl for transaction test</span>
+        <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">get_transaction</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Transaction</span><span class="op">&lt;</span><span class="ident">MySql</span><span class="op">&gt;</span>, <span class="ident">Error</span><span class="op">&gt;</span> {
+            <span class="macro">unimplemented!</span>();
+
+            <span class="prelude-val">Err</span>(<span class="ident">repos::Error::TestError</span>())
+        }
 
         <span class="kw">fn</span> <span class="ident">isu_repository</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::IsuRepo</span> {
             <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">isu_repository</span>
