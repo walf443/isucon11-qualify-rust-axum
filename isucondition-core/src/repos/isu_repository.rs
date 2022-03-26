@@ -147,7 +147,10 @@ impl IsuRepositoryImpl {
                 jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
                 name,
                 `character`
-            FROM isu WHERE jia_user_id = ?"##,
+            FROM isu
+            WHERE jia_user_id = ?
+            ORDER BY id DESC
+            "##,
             jia_user_id.to_string()
         )
         .fetch_all(executor)
