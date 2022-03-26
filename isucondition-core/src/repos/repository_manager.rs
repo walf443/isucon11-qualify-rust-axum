@@ -1,17 +1,23 @@
 use crate::database::DBConnectionPool;
+use crate::repos;
 use crate::repos::isu_association_config_repository::{
     IsuAssociationConfigRepository, IsuAssociationConfigRepositoryImpl,
 };
 use crate::repos::isu_condition_repository::{IsuConditionRepository, IsuConditionRepositoryImpl};
 use crate::repos::isu_repository::{IsuRepository, IsuRepositoryImpl};
 use crate::repos::user_repository::{UserRepository, UserRepositoryImpl};
+use async_trait::async_trait;
+use sqlx::MySql;
 
+#[async_trait]
 pub trait RepositoryManager: Clone + std::marker::Send + std::marker::Sync {
     type IsuRepo: IsuRepository + std::marker::Send + std::marker::Sync;
     type IsuAssociationConfigRepo: IsuAssociationConfigRepository;
     type IsuConditionRepo: IsuConditionRepository + std::marker::Send + std::marker::Sync;
     type UserRepo: UserRepository;
 
+    // todo:  don't depend on db
+    async fn get_transaction(&self) -> Result<sqlx::Transaction<MySql>, repos::Error>;
     fn isu_repository(&self) -> &Self::IsuRepo;
     fn isu_association_config_repository(&self) -> &Self::IsuAssociationConfigRepo;
     fn isu_condition_repository(&self) -> &Self::IsuConditionRepo;
@@ -43,11 +49,17 @@ impl RepositoryManagerImpl {
     }
 }
 
+#[async_trait]
 impl RepositoryManager for RepositoryManagerImpl {
     type IsuRepo = IsuRepositoryImpl;
     type IsuAssociationConfigRepo = IsuAssociationConfigRepositoryImpl;
     type IsuConditionRepo = IsuConditionRepositoryImpl;
     type UserRepo = UserRepositoryImpl;
+
+    async fn get_transaction(&self) -> Result<sqlx::Transaction<MySql>, repos::Error> {
+        let tx = self.isu_repository.pool.begin().await?;
+        Ok(tx)
+    }
 
     fn isu_repository(&self) -> &Self::IsuRepo {
         &self.isu_repository
@@ -68,11 +80,15 @@ impl RepositoryManager for RepositoryManagerImpl {
 
 #[cfg(any(test, feature = "test"))]
 pub mod tests {
+    use crate::repos;
     use crate::repos::isu_association_config_repository::MockIsuAssociationConfigRepository;
     use crate::repos::isu_condition_repository::MockIsuConditionRepository;
     use crate::repos::isu_repository::MockIsuRepository;
     use crate::repos::repository_manager::RepositoryManager;
     use crate::repos::user_repository::MockUserRepository;
+    use crate::repos::Error;
+    use async_trait::async_trait;
+    use sqlx::{MySql, Transaction};
 
     impl Clone for MockIsuAssociationConfigRepository {
         fn clone(&self) -> Self {
@@ -117,11 +133,19 @@ pub mod tests {
         }
     }
 
+    #[async_trait]
     impl RepositoryManager for MockRepositoryManager {
         type IsuRepo = MockIsuRepository;
         type IsuAssociationConfigRepo = MockIsuAssociationConfigRepository;
         type IsuConditionRepo = MockIsuConditionRepository;
         type UserRepo = MockUserRepository;
+
+        // you should use RepositoryImpl for transaction test
+        async fn get_transaction(&self) -> Result<Transaction<MySql>, Error> {
+            unimplemented!();
+
+            Err(repos::Error::TestError())
+        }
 
         fn isu_repository(&self) -> &Self::IsuRepo {
             &self.isu_repository
