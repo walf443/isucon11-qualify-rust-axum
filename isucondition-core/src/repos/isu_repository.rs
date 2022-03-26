@@ -4,6 +4,7 @@ use crate::models::user::UserID;
 use crate::repos;
 use crate::repos::{Error, Result};
 use async_trait::async_trait;
+use sqlx::{MySql, MySqlExecutor, Transaction};
 
 #[cfg(test)]
 mod tests;
@@ -12,6 +13,11 @@ mod tests;
 #[async_trait]
 pub trait IsuRepository {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;
+    async fn find_all_by_user_id_in_tx<'e>(
+        &self,
+        mut tx: Transaction<'e, MySql>,
+        jia_user_id: &UserID,
+    ) -> Result<Vec<Isu>>;
     async fn find_image_by_uuid_and_user_id(
         &self,
         jia_uuid: &IsuUUID,
@@ -34,21 +40,18 @@ pub struct IsuRepositoryImpl {
 #[async_trait]
 impl IsuRepository for IsuRepositoryImpl {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>> {
-        let chairs = sqlx::query_as!(
-            Isu,
-            r##"SELECT
-                id as `id:IsuID`,
-                jia_user_id as `jia_user_id:UserID`,
-                jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
-                name,
-                `character`
-            FROM isu WHERE jia_user_id = ?"##,
-            jia_user_id.to_string()
-        )
-        .fetch_all(&self.pool)
-        .await?;
+        let mut conn = self.pool.acquire().await?;
+        self.find_all_by_user_id_in_query(&mut conn, jia_user_id)
+            .await
+    }
 
-        Ok(chairs)
+    async fn find_all_by_user_id_in_tx<'t>(
+        &self,
+        mut tx: Transaction<'t, MySql>,
+        jia_user_id: &UserID,
+    ) -> Result<Vec<Isu>> {
+        self.find_all_by_user_id_in_query(&mut tx, jia_user_id)
+            .await
     }
 
     async fn find_image_by_uuid_and_user_id(
@@ -127,5 +130,29 @@ impl IsuRepository for IsuRepositoryImpl {
         .await?;
 
         Ok(result)
+    }
+}
+
+impl IsuRepositoryImpl {
+    async fn find_all_by_user_id_in_query<'e>(
+        &self,
+        executor: impl MySqlExecutor<'e>,
+        jia_user_id: &UserID,
+    ) -> Result<Vec<Isu>> {
+        let chairs = sqlx::query_as!(
+            Isu,
+            r##"SELECT
+                id as `id:IsuID`,
+                jia_user_id as `jia_user_id:UserID`,
+                jia_isu_uuid as `jia_isu_uuid:IsuUUID`,
+                name,
+                `character`
+            FROM isu WHERE jia_user_id = ?"##,
+            jia_user_id.to_string()
+        )
+        .fetch_all(executor)
+        .await?;
+
+        Ok(chairs)
     }
 }
