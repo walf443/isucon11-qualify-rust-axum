@@ -1031,24 +1031,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35e70ee094dc02fd9c13fdad4940090f22dbd6ac7c9e7094a46cf0232a50bc7c"
 
 [[package]]
-name = "isucondition-core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "chrono",
- "mockall",
- "serde",
- "serde_json",
- "sqlx",
- "thiserror",
- "tokio",
- "tracing",
- "url",
-]
-
-[[package]]
-name = "isucondition-http"
+name = "isucondition-axum"
 version = "0.1.0"
 dependencies = [
  "anyhow",
@@ -1071,6 +1054,23 @@ dependencies = [
  "tower-cookies",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "isucondition-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "chrono",
+ "mockall",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "thiserror",
+ "tokio",
+ "tracing",
+ "url",
 ]
 
 [[package]]
