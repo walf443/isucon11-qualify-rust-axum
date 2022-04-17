@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["isucondition_core","isucondition_http"];
+window.ALL_CRATES = ["isucondition_axum","isucondition_core","isucondition_http"];
