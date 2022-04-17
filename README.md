@@ -16,10 +16,10 @@ $ cargo test --workspace -- --test-threads=1 --nocapture
 ```mermaid
 
 flowchart LR
-  isucondition-http --> isucondition-core
+  isucondition-axum --> isucondition-core
 ```
 
-## isucondition-http
+## isucondition-axum
 handle http request using axum.
 
 use isucondition-core API.
