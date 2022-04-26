@@ -5,11 +5,17 @@ use crate::models::isu_condition::IsuConditionID;
 use crate::repos::Result;
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
+use sqlx::{MySql, MySqlExecutor, Transaction};
 
 #[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
 pub trait IsuConditionRepository {
     async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>>;
+    async fn find_last_by_isu_id_in_tx<'t>(
+        &self,
+        tx: &mut Transaction<'t, MySql>,
+        jia_isu_uuid: &IsuUUID,
+    ) -> Result<Option<IsuCondition>>;
     async fn find_all_by_uuid(&self, jia_isu_uuid: &IsuUUID) -> Result<Vec<IsuCondition>>;
     async fn find_all_by_uuid_in_time(
         &self,
@@ -85,24 +91,17 @@ impl IsuConditionRepositoryImpl {
 #[async_trait]
 impl IsuConditionRepository for IsuConditionRepositoryImpl {
     async fn find_last_by_isu_id(&self, jia_isu_uuid: &IsuUUID) -> Result<Option<IsuCondition>> {
-        let result = sqlx::query_as!(
-            IsuCondition,
-            r##"SELECT
-                    id AS `id:IsuConditionID`,
-                    jia_isu_uuid AS `jia_isu_uuid:IsuUUID`,
-                    is_sitting as `is_sitting: bool`,
-                    `condition`,
-                    message,
-                    created_at,
-                    `timestamp`
-                FROM `isu_condition`
-                WHERE `jia_isu_uuid` = ?
-                ORDER BY `timestamp` DESC LIMIT 1"##,
-            jia_isu_uuid.to_string(),
-        )
-        .fetch_optional(&self.pool)
-        .await?;
-        Ok(result)
+        let mut conn = self.pool.acquire().await?;
+        self.find_last_by_isu_id_in_query(&mut conn, jia_isu_uuid)
+            .await
+    }
+
+    async fn find_last_by_isu_id_in_tx<'t>(
+        &self,
+        tx: &mut Transaction<'t, MySql>,
+        jia_isu_uuid: &IsuUUID,
+    ) -> Result<Option<IsuCondition>> {
+        self.find_last_by_isu_id_in_query(tx, jia_isu_uuid).await
     }
 
     async fn find_all_by_uuid(&self, jia_isu_uuid: &IsuUUID) -> Result<Vec<IsuCondition>> {
@@ -204,6 +203,88 @@ mod test {
             let condition = repo
                 .find_last_by_isu_id(&IsuUUID::new("1".to_string()))
                 .await?;
+
+            assert!(condition.is_some());
+            let condition = condition.unwrap();
+            assert_eq!(
+                IsuCondition {
+                    id: condition.id.clone(),
+                    timestamp: condition.timestamp.clone(),
+                    created_at: condition.created_at.clone(),
+                    jia_isu_uuid: IsuUUID::new("1".to_string()),
+                    is_sitting: true,
+                    condition: "".to_string(),
+                    message: "test".to_string(),
+                },
+                condition
+            );
+
+            cleaner.clean().await?;
+
+            Ok(())
+        }
+    }
+
+    mod find_last_by_isu_id_in_tx {
+        use crate::database::get_db_connection_for_test;
+        use crate::models::isu::IsuUUID;
+        use crate::models::isu_condition::IsuCondition;
+        use crate::repos::isu_condition_repository::{
+            IsuConditionRepository, IsuConditionRepositoryImpl,
+        };
+        use crate::repos::Result;
+        use crate::test::Cleaner;
+
+        #[tokio::test]
+        async fn with_empty() -> Result<()> {
+            let pool = get_db_connection_for_test().await;
+            let mut tx = pool.begin().await?;
+
+            let mut cleaner = Cleaner::new(pool.clone());
+            cleaner.prepare_table("isu_condition").await?;
+
+            let repo = IsuConditionRepositoryImpl { pool: pool };
+            let condition = repo
+                .find_last_by_isu_id_in_tx(&mut tx, &IsuUUID::new("1".to_string()))
+                .await?;
+
+            tx.commit().await?;
+
+            assert!(condition.is_none());
+
+            cleaner.clean().await?;
+
+            Ok(())
+        }
+
+        #[tokio::test]
+        async fn with_result() -> Result<()> {
+            let pool = get_db_connection_for_test().await;
+            let mut tx = pool.begin().await?;
+
+            let mut cleaner = Cleaner::new(pool.clone());
+            cleaner.prepare_table("isu_condition").await?;
+
+            sqlx::query!(
+            "INSERT INTO isu_condition (jia_isu_uuid, timestamp, is_sitting, `condition`, message) VALUES  (?, ?, ?, ?, ?), (?, ?, ?, ?, ?)",
+            "1".to_string(),
+            "2022-02-11T10:00:00".to_string(),
+            true,
+            "",
+            "test",
+            "2".to_string(),
+            "2022-02-10T10:00:00".to_string(),
+            true,
+            "",
+            "test2"
+        ).execute(&pool).await?;
+
+            let repo = IsuConditionRepositoryImpl { pool: pool };
+            let condition = repo
+                .find_last_by_isu_id_in_tx(&mut tx, &IsuUUID::new("1".to_string()))
+                .await?;
+
+            tx.commit().await?;
 
             assert!(condition.is_some());
             let condition = condition.unwrap();
@@ -361,5 +442,32 @@ mod test {
 
             Ok(())
         }
+    }
+}
+
+impl IsuConditionRepositoryImpl {
+    async fn find_last_by_isu_id_in_query<'e>(
+        &self,
+        executor: impl MySqlExecutor<'e>,
+        jia_isu_uuid: &IsuUUID,
+    ) -> Result<Option<IsuCondition>> {
+        let result = sqlx::query_as!(
+            IsuCondition,
+            r##"SELECT
+                    id AS `id:IsuConditionID`,
+                    jia_isu_uuid AS `jia_isu_uuid:IsuUUID`,
+                    is_sitting as `is_sitting: bool`,
+                    `condition`,
+                    message,
+                    created_at,
+                    `timestamp`
+                FROM `isu_condition`
+                WHERE `jia_isu_uuid` = ?
+                ORDER BY `timestamp` DESC LIMIT 1"##,
+            jia_isu_uuid.to_string(),
+        )
+        .fetch_optional(executor)
+        .await?;
+        Ok(result)
     }
 }

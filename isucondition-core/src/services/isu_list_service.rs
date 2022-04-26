@@ -4,6 +4,7 @@ use crate::models::user::UserID;
 use crate::repos::isu_condition_repository::IsuConditionRepository;
 use crate::repos::isu_repository::IsuRepository;
 use crate::repos::repository_manager::RepositoryManager;
+use crate::repos::transaction::Transaction;
 use crate::repos::Result;
 use async_trait::async_trait;
 use std::sync::Arc;
@@ -29,10 +30,12 @@ impl<R: 'static + RepositoryManager> IsuListService<R> for IsuListServiceImpl<R>
     }
 
     async fn run(&self, jia_user_id: &UserID) -> Result<Vec<IsuWithCondition>> {
+        let mut tx = self.repo.get_transaction().await?;
+
         let chairs = self
             .repo
             .isu_repository()
-            .find_all_by_user_id(jia_user_id)
+            .find_all_by_user_id_in_tx(&mut tx, jia_user_id)
             .await?;
 
         let mut list: Vec<IsuWithCondition> = Vec::new();
@@ -46,6 +49,8 @@ impl<R: 'static + RepositoryManager> IsuListService<R> for IsuListServiceImpl<R>
 
             list.push((chair, last_isu_condition));
         }
+
+        tx.commit().await?;
 
         Ok(list)
     }

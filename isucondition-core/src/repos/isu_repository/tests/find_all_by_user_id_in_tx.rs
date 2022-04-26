@@ -16,8 +16,10 @@ async fn with_empty() -> Result<()> {
 
     let repo = IsuRepositoryImpl { pool: pool };
     let result = repo
-        .find_all_by_user_id_in_tx(tx, &UserID::new("1".to_string()))
+        .find_all_by_user_id_in_tx(&mut tx, &UserID::new("1".to_string()))
         .await?;
+    tx.commit().await?;
+
     assert_eq!(result.len(), 0);
 
     cleaner.clean().await?;
@@ -51,8 +53,10 @@ async fn with_result() -> Result<()> {
 
     let repo = IsuRepositoryImpl { pool: pool };
     let result = repo
-        .find_all_by_user_id_in_tx(tx, &UserID::new("1".to_string()))
+        .find_all_by_user_id_in_tx(&mut tx, &UserID::new("1".to_string()))
         .await?;
+
+    tx.commit().await?;
     assert_eq!(result.len(), 3);
 
     cleaner.clean().await?;

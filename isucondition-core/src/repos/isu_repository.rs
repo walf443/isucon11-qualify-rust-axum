@@ -13,9 +13,9 @@ mod tests;
 #[async_trait]
 pub trait IsuRepository {
     async fn find_all_by_user_id(&self, jia_user_id: &UserID) -> Result<Vec<Isu>>;
-    async fn find_all_by_user_id_in_tx<'e>(
+    async fn find_all_by_user_id_in_tx<'t>(
         &self,
-        mut tx: Transaction<'e, MySql>,
+        tx: &mut Transaction<'t, MySql>,
         jia_user_id: &UserID,
     ) -> Result<Vec<Isu>>;
     async fn find_image_by_uuid_and_user_id(
@@ -47,11 +47,10 @@ impl IsuRepository for IsuRepositoryImpl {
 
     async fn find_all_by_user_id_in_tx<'t>(
         &self,
-        mut tx: Transaction<'t, MySql>,
+        tx: &mut Transaction<'t, MySql>,
         jia_user_id: &UserID,
     ) -> Result<Vec<Isu>> {
-        self.find_all_by_user_id_in_query(&mut tx, jia_user_id)
-            .await
+        self.find_all_by_user_id_in_query(tx, jia_user_id).await
     }
 
     async fn find_image_by_uuid_and_user_id(
