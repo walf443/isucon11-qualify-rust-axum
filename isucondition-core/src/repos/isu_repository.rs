@@ -28,6 +28,11 @@ pub trait IsuRepository {
         jia_uuid: &IsuUUID,
         jia_user_id: &UserID,
     ) -> Result<Option<Isu>>;
+    async fn count_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<i64>;
     async fn find_character_group_by(&self) -> Result<Vec<Option<String>>>;
     async fn find_all_by_character(&self, character: &String) -> Result<Vec<Isu>>;
 }
@@ -105,6 +110,27 @@ impl IsuRepository for IsuRepositoryImpl {
         }
     }
 
+    async fn count_by_uuid_and_user_id(
+        &self,
+        jia_uuid: &IsuUUID,
+        jia_user_id: &UserID,
+    ) -> Result<i64> {
+        let result = sqlx::query_scalar!(
+            r##"SELECT COUNT(1) FROM isu WHERE jia_isu_uuid = ? AND jia_user_id = ?"##,
+            jia_uuid.to_string(),
+            jia_user_id.to_string()
+        )
+        .fetch_one(&self.pool)
+        .await;
+
+        match result {
+            Ok(record) => Ok(record),
+            Err(err) => match err {
+                sqlx::error::Error::RowNotFound => Ok(0),
+                _ => Err(repos::Error::SqlError(err)),
+            },
+        }
+    }
     async fn find_character_group_by(&self) -> Result<Vec<Option<String>>> {
         let result = sqlx::query!("SELECT `character` FROM isu GROUP BY `character`")
             .fetch_all(&self.pool)
