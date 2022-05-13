@@ -5,6 +5,7 @@ use crate::models::isu_condition::IsuConditionID;
 use crate::repos::Result;
 use async_trait::async_trait;
 use chrono::NaiveDateTime;
+use sqlx::{MySql, Transaction};
 
 #[cfg_attr(any(test, feature = "test"), mockall::automock)]
 #[async_trait]
@@ -16,6 +17,11 @@ pub trait IsuConditionRepository {
         jia_isu_uuid: &IsuUUID,
         start_time: Option<NaiveDateTime>,
         end_time: NaiveDateTime,
+    ) -> Result<Vec<IsuCondition>>;
+    async fn find_all_by_uuid_in_tx<'e>(
+        &self,
+        mut tx: Transaction<'e, MySql>,
+        jia_isu_uuid: &IsuUUID,
     ) -> Result<Vec<IsuCondition>>;
 }
 
@@ -122,6 +128,32 @@ impl IsuConditionRepository for IsuConditionRepositoryImpl {
             jia_isu_uuid.to_string(),
         )
         .fetch_all(&self.pool)
+        .await?;
+
+        Ok(result)
+    }
+
+    async fn find_all_by_uuid_in_tx<'e>(
+        &self,
+        mut tx: Transaction<'e, MySql>,
+        jia_isu_uuid: &IsuUUID,
+    ) -> Result<Vec<IsuCondition>> {
+        let result = sqlx::query_as!(
+            IsuCondition,
+            r##"SELECT
+                    id AS `id:IsuConditionID`,
+                    jia_isu_uuid AS `jia_isu_uuid:IsuUUID`,
+                    is_sitting as `is_sitting: bool`,
+                    `condition`,
+                    message,
+                    created_at,
+                    `timestamp`
+                FROM `isu_condition`
+                WHERE `jia_isu_uuid` = ?
+                ORDER BY `timestamp` ASC"##,
+            jia_isu_uuid.to_string(),
+        )
+        .fetch_all(&mut tx)
         .await?;
 
         Ok(result)
