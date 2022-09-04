@@ -1,3 +1,4 @@
+use sqlx::mysql::MySqlConnectOptions;
 use sqlx::{Executor, MySqlPool};
 use std::env;
 use std::time::Duration;
@@ -11,7 +12,7 @@ pub struct DBConfig {
     db_name: String,
     user: String,
     password: String,
-    connect_timeout: Duration,
+    acquire_timeout: Duration,
 }
 
 impl DBConfig {
@@ -19,7 +20,7 @@ impl DBConfig {
         let mut config = Self::default();
         config.db_name =
             env::var("MYSQL_DBNAME_TEST").unwrap_or_else(|_| "isucondition_test".to_owned());
-        config.connect_timeout = Duration::from_secs(1);
+        config.acquire_timeout = Duration::from_secs(1);
         config
     }
 }
@@ -36,15 +37,15 @@ impl Default for DBConfig {
             user: env::var("MYSQL_USER").unwrap_or_else(|_| "isucon".to_owned()),
             db_name: env::var("MYSQL_DBNAME").unwrap_or_else(|_| "isucondition".to_owned()),
             password: env::var("MYSQL_PASS").unwrap_or_else(|_| "isucon".to_owned()),
-            connect_timeout: Duration::from_secs(30),
+            acquire_timeout: Duration::from_secs(30),
         }
     }
 }
 
 pub async fn get_db_connection(config: DBConfig) -> DBConnectionPool {
     let pool = sqlx::mysql::MySqlPoolOptions::new()
-        .connect_timeout(config.connect_timeout)
-        .after_connect(|conn| {
+        .acquire_timeout(config.acquire_timeout)
+        .after_connect(|conn, _metadata| {
             Box::pin(async move {
                 conn.execute("set time_zone = '+09:00'").await?;
                 Ok(())
