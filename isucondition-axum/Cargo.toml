@@ -8,27 +8,25 @@ edition = "2021"
 [dependencies]
 isucondition-core = { path = "../isucondition-core/" }
 
-anyhow.workspace = true
-async-trait.workspace = true
-tokio.workspace = true
-chrono.workspace = true
-serde.workspace = true
-serde_json.workspace = true
-thiserror.workspace = true
-tracing.workspace = true
-
+anyhow = "1"
+async-trait = "0.1"
 axum = { version = "0.4", features = ["headers"] }
+chrono = "0.4"
 hyper = "0.14"
 jsonwebtoken = "8"
 lazy_static = "1.4"
 reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
 tower = "0"
 tower-cookies = "0.4"
+tracing = "0.1"
 tracing-subscriber = "0.3"
+thiserror = "1"
 async-session = "3.0.0"
 async-redis-session = "0.2.2"
 
 [dev-dependencies]
+sqlx = { version = "0.5", features = ["mysql", "chrono", "runtime-tokio-native-tls"] }
 isucondition-core = { path = "../isucondition-core/", features = ["test"] }
-sqlx.workspace = true
-
