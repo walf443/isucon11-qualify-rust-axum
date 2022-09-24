@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__from_repo",""],["__run",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__from_repo",""],["__run",""]]};

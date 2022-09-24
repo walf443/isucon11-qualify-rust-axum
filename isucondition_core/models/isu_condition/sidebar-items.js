@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["ConditionLevel",""]],"struct":[["IsuCondition",""],["IsuConditionID",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["ConditionLevel",""]],"struct":[["IsuCondition",""],["IsuConditionID",""]]};

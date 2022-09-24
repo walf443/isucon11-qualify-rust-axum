@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["get_db_connection",""],["get_db_connection_for_test",""]],"struct":[["DBConfig",""],["RedisConfig",""]],"type":[["DBConnectionPool",""]]});
+window.SIDEBAR_ITEMS = {"fn":[["get_db_connection",""],["get_db_connection_for_test",""]],"struct":[["DBConfig",""],["RedisConfig",""]],"type":[["DBConnectionPool",""]]};

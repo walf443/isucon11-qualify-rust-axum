@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__mock_MockResetDatabaseService",""],["__mock_MockResetDatabaseService_ResetDatabaseService",""]],"struct":[["MockResetDatabaseService",""],["ResetDatabaseServiceImpl",""]],"trait":[["ResetDatabaseService",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__mock_MockResetDatabaseService",""],["__mock_MockResetDatabaseService_ResetDatabaseService",""]],"struct":[["MockResetDatabaseService",""],["ResetDatabaseServiceImpl",""]],"trait":[["ResetDatabaseService",""]]};

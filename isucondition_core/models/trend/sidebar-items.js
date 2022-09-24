@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Trend",""]],"type":[["IsuWithCondition",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["Trend",""]],"type":[["IsuWithCondition",""]]};

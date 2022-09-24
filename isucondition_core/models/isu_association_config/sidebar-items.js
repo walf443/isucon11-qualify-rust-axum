@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["IsuAssociationConfigForm",""],["NameString",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["IsuAssociationConfigForm",""],["NameString",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["Cleaner",""]]});
+window.SIDEBAR_ITEMS = {"struct":[["Cleaner",""]]};

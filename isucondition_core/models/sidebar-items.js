@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error",""]],"mod":[["isu",""],["isu_association_config",""],["isu_condition",""],["trend",""],["user",""]],"type":[["Result",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["Error",""]],"mod":[["isu",""],["isu_association_config",""],["isu_condition",""],["trend",""],["user",""]],"type":[["Result",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__count_by_user_id",""],["__insert",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__count_by_user_id",""],["__insert",""]]};

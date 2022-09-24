@@ -1,4 +1,4 @@
-var N = null;var sourcesIndex = {};
+var sourcesIndex = {};
 sourcesIndex["isucondition_axum"] = {"name":"","dirs":[{"name":"requests","files":["current_user_id.rs","mod.rs","session.rs"]},{"name":"responses","files":["error.rs","isu_condition_response.rs","isu_response.rs","mod.rs","trend_response.rs"]},{"name":"routes","files":["authorization_routes.rs","initialize_routes.rs","isu_condition_routes.rs","isu_routes.rs","mod.rs","trend_routes.rs","user_routes.rs"]}],"files":["lib.rs"]};
 sourcesIndex["isucondition_core"] = {"name":"","dirs":[{"name":"models","files":["isu.rs","isu_association_config.rs","isu_condition.rs","mod.rs","trend.rs","user.rs"]},{"name":"repos","files":["isu_association_config_repository.rs","isu_condition_repository.rs","isu_repository.rs","mod.rs","repository_manager.rs","user_repository.rs"]},{"name":"services","files":["isu_list_service.rs","mod.rs","reset_database_service.rs","service_manager.rs","trend_list_service.rs"]}],"files":["database.rs","lib.rs","test.rs"]};
 createSourceSidebar();

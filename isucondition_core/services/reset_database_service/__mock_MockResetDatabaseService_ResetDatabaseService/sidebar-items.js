@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__run",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__run",""]]};

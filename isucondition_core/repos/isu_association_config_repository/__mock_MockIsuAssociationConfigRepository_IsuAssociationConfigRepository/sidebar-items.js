@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__get_jia_service_url",""],["__insert",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__get_jia_service_url",""],["__insert",""]]};

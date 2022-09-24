@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["isu_list_service",""],["reset_database_service",""],["service_manager",""],["trend_list_service",""]],"trait":[["Service",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["isu_list_service",""],["reset_database_service",""],["service_manager",""],["trend_list_service",""]],"trait":[["Service",""]]};

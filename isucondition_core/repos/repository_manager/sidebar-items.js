@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["tests",""]],"struct":[["RepositoryManagerImpl",""]],"trait":[["RepositoryManager",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["tests",""]],"struct":[["RepositoryManagerImpl",""]],"trait":[["RepositoryManager",""]]};

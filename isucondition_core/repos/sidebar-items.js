@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Error",""]],"mod":[["isu_association_config_repository",""],["isu_condition_repository",""],["isu_repository",""],["repository_manager",""],["user_repository",""]],"type":[["Result",""]]});
+window.SIDEBAR_ITEMS = {"enum":[["Error",""]],"mod":[["isu_association_config_repository",""],["isu_condition_repository",""],["isu_repository",""],["repository_manager",""],["user_repository",""]],"type":[["Result",""]]};

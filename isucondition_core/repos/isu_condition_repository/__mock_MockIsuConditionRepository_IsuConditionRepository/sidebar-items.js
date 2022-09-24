@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["__find_all_by_uuid",""],["__find_all_by_uuid_in_time",""],["__find_all_by_uuid_in_tx",""],["__find_last_by_isu_id",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["__find_all_by_uuid",""],["__find_all_by_uuid_in_time",""],["__find_all_by_uuid_in_tx",""],["__find_last_by_isu_id",""]]};

@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["tests",""]],"struct":[["ServiceManagerImpl",""]],"trait":[["ServiceManager",""]]});
+window.SIDEBAR_ITEMS = {"mod":[["tests",""]],"struct":[["ServiceManagerImpl",""]],"trait":[["ServiceManager",""]]};
